@@ -9,7 +9,7 @@ from scrapers.ulov_domov_scraper import UlovDomovScraper
 
 
 SCRAPERS: List[GenericApartmentRentalScraper] = [
-    SrealityScraper("https://www.sreality.cz/api/cs/v2/estates/rss?category_main_cb=1&category_sub_cb=7|11|10|8|12|9|16&category_type_cb=2&locality_district_id=72&locality_region_id=14&sort=0"),
+    #SrealityScraper("https://www.sreality.cz/api/cs/v2/estates/rss?category_main_cb=1&category_sub_cb=7|11|10|8|12|9|16&category_type_cb=2&locality_district_id=72&locality_region_id=14&sort=0"),
     IdnesRealityScraper("https://reality.idnes.cz/s/pronajem/byty/brno-mesto/?s-qc%5BsubtypeFlat%5D%5B0%5D=31&s-qc%5BsubtypeFlat%5D%5B1%5D=4k&s-qc%5BsubtypeFlat%5D%5B2%5D=41&s-qc%5BsubtypeFlat%5D%5B3%5D=5k&s-qc%5BsubtypeFlat%5D%5B4%5D=51&s-qc%5BsubtypeFlat%5D%5B5%5D=6k&s-qc%5BsubtypeFlat%5D%5B6%5D=atypical"),
     UlovDomovScraper("https://www.ulovdomov.cz/fe-api/find"),
     EuroBydleniScraper("https://www.eurobydleni.cz/search-form"),
