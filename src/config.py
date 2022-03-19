@@ -12,3 +12,7 @@ load_dotenv(".env")
 FOUND_OFFERS_FILE = os.getenv("FOUND_OFFERS_FILE")
 
 REFRESH_INTERVAL_MINUTES = int(os.getenv("REFRESH_INTERVAL_MINUTES"))
+
+DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+
+DISCORD_CHANNEL = int(os.getenv('DISCORD_CHANNEL'))
