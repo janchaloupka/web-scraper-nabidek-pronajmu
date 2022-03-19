@@ -2,7 +2,7 @@
 import logging
 import time
 from typing import List
-from config import FOUND_OFFERS_FILE, REFRESH_INTERVAL_MINUTES
+from config import *
 from offers_storage import OffersStorage
 from scraper import fetch_latest_offers
 from scrapers.generic_apartment_rental_scraper import ApartmentRentalOffer
