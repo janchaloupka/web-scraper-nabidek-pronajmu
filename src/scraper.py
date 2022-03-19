@@ -18,6 +18,12 @@ SCRAPERS: List[GenericApartmentRentalScraper] = [
 
 
 def fetch_latest_offers() -> List[ApartmentRentalOffer]:
+    """Získá všechny nejnovější nabídky z dostupných serverů
+
+    Returns:
+        List[ApartmentRentalOffer]: Seznam nabídek
+    """
+
     offers: List[ApartmentRentalOffer] = []
     for scraper in SCRAPERS:
         try:

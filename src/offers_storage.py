@@ -1,6 +1,6 @@
 import os
 from typing import List, Set
-
+from xmlrpc.client import boolean
 from scrapers.generic_apartment_rental_scraper import ApartmentRentalOffer
 
 
@@ -25,11 +25,24 @@ class OffersStorage:
             self.first_time = True
 
 
-    def contains(self, offer: ApartmentRentalOffer):
+    def contains(self, offer: ApartmentRentalOffer) -> bool:
+        """Objevila se nabídka již dříve?
+
+        Args:
+            offer (ApartmentRentalOffer): Nabídka
+
+        Returns:
+            bool: Jde o starou nabídku
+        """
         return offer.link in self._links
 
 
     def save_offers(self, offers: List[ApartmentRentalOffer]):
+        """Uložit nabídky jako nalezené
+
+        Args:
+            offers (List[ApartmentRentalOffer]): Nalezené nabídky
+        """
         with open(self.path, 'a+') as file_object:
             for offer in offers:
                 self._links.add(offer.link)
