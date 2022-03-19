@@ -5,6 +5,7 @@ import os
 import traceback
 import time
 from typing import List, Set
+from dotenv import load_dotenv
 from scrapers.euro_bydleni_scraper import EuroBydleniScraper
 from scrapers.generic_apartment_rental_scraper import ApartmentRentalOffer, GenericApartmentRentalScraper
 from scrapers.idnes_reality_scraper import IdnesRealityScraper
@@ -21,9 +22,15 @@ SCRAPERS: List[GenericApartmentRentalScraper] = [
     RealingoScraper("https://www.realingo.cz/graphql")
 ]
 
-REMEMBERED_OFFERS_FILE = os.getenv("REMEMBERED_OFFERS_FILE") or "remembered_offers.txt"
+app_env = os.getenv("APP_ENV")
+if app_env:
+    load_dotenv(".env." + app_env)
 
-REFRESH_INTERVAL_MINUTES = int(os.getenv("REFRESH_INTERVAL_MINUTES") or "30")
+load_dotenv(".env")
+
+REMEMBERED_OFFERS_FILE = os.getenv("REMEMBERED_OFFERS_FILE")
+
+REFRESH_INTERVAL_MINUTES = int(os.getenv("REFRESH_INTERVAL_MINUTES"))
 
 silent_run = False
 """Pokud je true, nevypisujeme nalezené nabídky (typicky první spuštění)"""
@@ -79,7 +86,7 @@ if __name__ == "__main__":
     except FileNotFoundError:
         silent_run = True
 
-    logging.info("Fetching latest offers every " + REFRESH_INTERVAL_MINUTES + " minutes")
+    logging.info("Fetching latest offers every " + str(REFRESH_INTERVAL_MINUTES) + " minutes")
 
     # Spuštění funkce každých x sekund
     # https://stackoverflow.com/a/25251804

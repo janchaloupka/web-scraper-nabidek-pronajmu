@@ -6,7 +6,8 @@ VOLUME ["/data"]
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
-COPY . .
+COPY .env* .
+COPY src .
 
-ENV REMEMBERED_OFFERS_FILE=/data/remembered_offers.txt
+ENV APP_ENV=docker
 CMD [ "python3", "main.py"]
