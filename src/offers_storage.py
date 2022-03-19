@@ -1,6 +1,5 @@
 import os
 from typing import List, Set
-from xmlrpc.client import boolean
 from scrapers.generic_apartment_rental_scraper import ApartmentRentalOffer
 
 
@@ -48,4 +47,4 @@ class OffersStorage:
                 self._links.add(offer.link)
                 file_object.write(offer.link + os.linesep)
 
-            self.first_time = True
+            self.first_time = False
