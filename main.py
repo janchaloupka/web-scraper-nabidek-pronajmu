@@ -79,6 +79,8 @@ if __name__ == "__main__":
     except FileNotFoundError:
         silent_run = True
 
+    logging.info("Fetching latest offers every " + REFRESH_INTERVAL_MINUTES + " minutes")
+
     # Spuštění funkce každých x sekund
     # https://stackoverflow.com/a/25251804
     start_time = time.time()
