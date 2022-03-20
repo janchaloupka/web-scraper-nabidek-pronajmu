@@ -1,5 +1,4 @@
 #!/usr/bin/evn python3
-import asyncio
 import logging
 import discord
 from typing import List
