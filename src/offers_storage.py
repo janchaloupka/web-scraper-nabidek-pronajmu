@@ -1,6 +1,6 @@
 import os
 from typing import List, Set
-from scrapers.generic_apartment_rental_scraper import ApartmentRentalOffer
+from scrapers.rental_offer import RentalOffer
 
 
 class OffersStorage:
@@ -24,11 +24,11 @@ class OffersStorage:
             self.first_time = True
 
 
-    def contains(self, offer: ApartmentRentalOffer) -> bool:
+    def contains(self, offer: RentalOffer) -> bool:
         """Objevila se nabídka již dříve?
 
         Args:
-            offer (ApartmentRentalOffer): Nabídka
+            offer (RentalOffer): Nabídka
 
         Returns:
             bool: Jde o starou nabídku
@@ -36,11 +36,11 @@ class OffersStorage:
         return offer.link in self._links
 
 
-    def save_offers(self, offers: List[ApartmentRentalOffer]):
+    def save_offers(self, offers: List[RentalOffer]):
         """Uložit nabídky jako nalezené
 
         Args:
-            offers (List[ApartmentRentalOffer]): Nalezené nabídky
+            offers (List[RentalOffer]): Nalezené nabídky
         """
         with open(self.path, 'a+') as file_object:
             for offer in offers:

@@ -1,10 +1,16 @@
 from typing import List
 from urllib.parse import urljoin
-from scrapers.generic_apartment_rental_scraper import ApartmentRentalOffer, GenericApartmentRentalScraper
+from scrapers.scraper_base import ScraperBase
+from scrapers.rental_offer import RentalOffer
 import requests
 
 
-class RealingoScraper(GenericApartmentRentalScraper):
+class ScraperRealingo(ScraperBase):
+
+    name = "realingo"
+    logo_url = "https://www.realingo.cz/_next/static/media/images/android-chrome-144x144-cf1233ce.png"
+    color = 0x00BC78
+
     json_request = {
         "query": "query SearchOffer($purpose: OfferPurpose, $property: PropertyType, $saved: Boolean, $categories: [OfferCategory!], $area: RangeInput, $plotArea: RangeInput, $price: RangeInput, $bounds: GpsBoundsInput, $address: String, $transportType: TransportType, $toleration: Float, $buildingTypes: [BuildingType!], $buildingStatuses: [BuildingStatus!], $buildingPositions: [BuildingPosition!], $houseTypes: [HouseType!], $floor: RangeInput, $ownershipStatuses: [OwnershipStatus!], $furnitureStatuses: [FurnitureStatus!], $maxAge: Int, $contactType: ContactType, $geometry: GeoJSONGeometry, $sort: OfferSort = NEWEST, $first: Int = 20, $skip: Int = 0) {\n  addressGeometry(\n    address: $address\n    geometry: $geometry\n    toleration: $toleration\n    transportType: $transportType\n  ) {\n    geometry\n    mask\n  }\n  searchOffer(\n    filter: {purpose: $purpose, property: $property, saved: $saved, address: $address, transportType: $transportType, toleration: $toleration, categories: $categories, area: $area, plotArea: $plotArea, price: $price, bounds: $bounds, buildingTypes: $buildingTypes, buildingStatuses: $buildingStatuses, buildingPositions: $buildingPositions, houseTypes: $houseTypes, floor: $floor, ownershipStatuses: $ownershipStatuses, furnitureStatuses: $furnitureStatuses, maxAge: $maxAge, contactType: $contactType, geometry: $geometry}\n    sort: $sort\n    first: $first\n    skip: $skip\n    save: true\n  ) {\n    location {\n      id\n      type\n      url\n      name\n      neighbours {\n        id\n        type\n        url\n        name\n      }\n      breadcrumbs {\n        url\n        name\n      }\n      relatedSearch {\n        ...SearchParametersAttributes\n      }\n      center\n    }\n    items {\n      ...SearchOfferAttributes\n    }\n    total\n  }\n}\n\nfragment FilterAttributes on OfferFilter {\n  purpose\n  property\n  categories\n  address\n  location {\n    name\n  }\n  toleration\n  transportType\n  bounds {\n    northEast {\n      latitude\n      longitude\n    }\n    southWest {\n      latitude\n      longitude\n    }\n  }\n  saved\n  geometry\n  area {\n    from\n    to\n  }\n  plotArea {\n    from\n    to\n  }\n  price {\n    from\n    to\n  }\n  buildingTypes\n  buildingStatuses\n  buildingPositions\n  houseTypes\n  floor {\n    from\n    to\n  }\n  ownershipStatuses\n  furnitureStatuses\n  maxAge\n  contactType\n}\n\nfragment SearchParametersAttributes on SearchParameters {\n  filter {\n    ...FilterAttributes\n  }\n  page\n  priceMap\n  sort\n}\n\nfragment SearchOfferAttributes on Offer {\n  id\n  url\n  purpose\n  property\n  visited\n  liked\n  reserved\n  createdAt\n  category\n  purpose\n  property\n  price {\n    total\n    canonical\n    currency\n  }\n  area {\n    main\n    plot\n  }\n  photos {\n    main\n  }\n  location {\n    address\n    addressUrl\n    locationPrecision\n    latitude\n    longitude\n  }\n}\n",
         "operationName": "SearchOffer",
@@ -27,6 +33,7 @@ class RealingoScraper(GenericApartmentRentalScraper):
             "skip": 0
         }
     }
+
 
     def category_to_string(self, id) -> str:
         return {
@@ -67,17 +74,21 @@ class RealingoScraper(GenericApartmentRentalScraper):
             "OTHERS_MONUMENTS": "Ostatn\xed"
         }.get(id, "")
 
-    def get_latest_offers(self) -> List[ApartmentRentalOffer]:
+
+    def get_latest_offers(self) -> List[RentalOffer]:
         request = requests.post(self.url, headers=self.headers, json=self.json_request)
         response = request.json()
 
-        items: List[ApartmentRentalOffer] = []
+        items: List[RentalOffer] = []
+
         for offer in response["data"]["searchOffer"]["items"]:
-            items.append(ApartmentRentalOffer(
+            items.append(RentalOffer(
+                scraper = self,
                 link = urljoin(self.url, offer["url"]),
                 description = self.category_to_string(offer["category"]) + ", " + str(offer["area"]["main"]) + " m²",
                 location = offer["location"]["address"],
-                price = offer["price"]["total"]
+                price = offer["price"]["total"],
+                image_url = urljoin(self.url, "/static/images/" + (offer["photos"]["main"] or ""))
             ))
 
         return items

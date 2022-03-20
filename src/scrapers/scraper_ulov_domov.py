@@ -1,9 +1,15 @@
 from typing import List
-from scrapers.generic_apartment_rental_scraper import ApartmentRentalOffer, GenericApartmentRentalScraper
+from scrapers.scraper_base import ScraperBase
+from scrapers.rental_offer import RentalOffer
 import requests
 
 
-class UlovDomovScraper(GenericApartmentRentalScraper):
+class ScraperUlovDomov(ScraperBase):
+
+    name = "UlovDomov"
+    logo_url = "https://www.ulovdomov.cz/favicon.png"
+    color = 0xFFFFFF
+
     json_request = {
         "acreage_from": "",
         "acreage_to": "",
@@ -38,6 +44,7 @@ class UlovDomovScraper(GenericApartmentRentalScraper):
         "sticker": None
     }
 
+
     def disposition_id_to_string(self, id) -> str:
         return {
             1: "garsonky",
@@ -66,18 +73,20 @@ class UlovDomovScraper(GenericApartmentRentalScraper):
             "5_and_more": "5 a více"
         }.get(id, "")
 
-    def get_latest_offers(self) -> List[ApartmentRentalOffer]:
+    def get_latest_offers(self) -> List[RentalOffer]:
         request = requests.post(self.url, headers=self.headers, json=self.json_request)
         response = request.json()
 
-        items: List[ApartmentRentalOffer] = []
+        items: List[RentalOffer] = []
         for offer in response["offers"]:
-            items.append(ApartmentRentalOffer(
+            items.append(RentalOffer(
+                scraper = self,
                 link = offer["absolute_url"],
                 # TODO "Pronájem" podle ID?
                 description = "Pronájem " + self.disposition_id_to_string(offer["disposition_id"]) + " " + str(offer["acreage"]) + " m²",
                 location = offer["street"]["label"] + ", " + offer["village"]["label"] + " - " + offer["village_part"]["label"],
-                price = offer["price_rental"]
+                price = offer["price_rental"],
+                image_url = offer["photos"][0]["path"]
             ))
 
         return items
