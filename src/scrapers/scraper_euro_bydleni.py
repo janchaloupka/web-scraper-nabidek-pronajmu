@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 
 class ScraperEuroBydleni(ScraperBase):
 
+    query_url = "https://www.eurobydleni.cz/search-form"
     name = "Eurobydlení"
     logo_url = "https://files.janchaloupka.cz/eurobydleni.png"
     color = 0xFA0F54
@@ -44,7 +45,7 @@ class ScraperEuroBydleni(ScraperBase):
 
 
     def get_latest_offers(self) -> List[RentalOffer]:
-        request = requests.post(self.url, headers=self.headers, cookies=self.cookies, data=self.request_data)
+        request = requests.post(self.query_url, headers=self.headers, cookies=self.cookies, data=self.request_data)
         request.encoding = "utf-8"
         soup = BeautifulSoup(request.text, 'html.parser')
 
@@ -60,7 +61,7 @@ class ScraperEuroBydleni(ScraperBase):
 
             items.append(RentalOffer(
                 scraper = self,
-                link = urljoin(self.url, title.find("a").get('href')),
+                link = urljoin(self.query_url, title.find("a").get('href')),
                 description = title.get_text().strip(),
                 location = details[1].get_text().strip(),
                 price = int(re.sub(r"[^\d]", "", details[0].get_text())),

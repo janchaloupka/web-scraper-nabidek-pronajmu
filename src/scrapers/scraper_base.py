@@ -11,6 +11,11 @@ class ScraperBase():
 
     @property
     @abstractmethod
+    def query_url(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
     def name(self) -> str:
         pass
 
@@ -23,10 +28,6 @@ class ScraperBase():
     @abstractmethod
     def color(self) -> int:
         pass
-
-
-    def __init__(self, url: str):
-        self.url = url
 
 
     @abstractmethod

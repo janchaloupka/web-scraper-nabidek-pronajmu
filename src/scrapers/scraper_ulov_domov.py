@@ -6,6 +6,7 @@ import requests
 
 class ScraperUlovDomov(ScraperBase):
 
+    query_url = "https://www.ulovdomov.cz/fe-api/find"
     name = "UlovDomov"
     logo_url = "https://www.ulovdomov.cz/favicon.png"
     color = 0xFFFFFF
@@ -74,7 +75,7 @@ class ScraperUlovDomov(ScraperBase):
         }.get(id, "")
 
     def get_latest_offers(self) -> List[RentalOffer]:
-        request = requests.post(self.url, headers=self.headers, json=self.json_request)
+        request = requests.post(self.query_url, headers=self.headers, json=self.json_request)
         response = request.json()
 
         items: List[RentalOffer] = []
