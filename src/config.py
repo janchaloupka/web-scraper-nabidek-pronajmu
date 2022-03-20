@@ -9,6 +9,8 @@ if app_env:
 load_dotenv(".env")
 
 
+DEBUG = bool(os.getenv("DEBUG"))
+
 FOUND_OFFERS_FILE = os.getenv("FOUND_OFFERS_FILE")
 
 REFRESH_INTERVAL_MINUTES = int(os.getenv("REFRESH_INTERVAL_MINUTES"))
@@ -18,3 +20,5 @@ DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 DISCORD_OFFERS_CHANNEL = int(os.getenv('DISCORD_OFFERS_CHANNEL'))
 
 DISCORD_DEV_CHANNEL = int(os.getenv('DISCORD_DEV_CHANNEL'))
+
+INFO_DEBUG = 15

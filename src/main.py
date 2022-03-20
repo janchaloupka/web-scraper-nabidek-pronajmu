@@ -18,15 +18,15 @@ client = discord.Client()
 async def on_ready():
     global channel, storage
 
-    logging.basicConfig(
-        level=logging.INFO, format='%(asctime)s - [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-
     dev_channel = client.get_channel(DISCORD_DEV_CHANNEL)
     channel = client.get_channel(DISCORD_OFFERS_CHANNEL)
     storage = OffersStorage(FOUND_OFFERS_FILE)
 
-    discord_error_logger = DiscordLogger(client, dev_channel, logging.ERROR)
-    logging.getLogger().addHandler(discord_error_logger)
+    if not DEBUG:
+        discord_error_logger = DiscordLogger(client, dev_channel, logging.ERROR)
+        logging.getLogger().addHandler(discord_error_logger)
+    else:
+        logging.info("Discord logger is inactive in debug mode")
 
     logging.info("Available scrapers: " + ", ".join([s.name for s in scrapers]))
 
@@ -37,7 +37,7 @@ async def on_ready():
 
 @tasks.loop(minutes=REFRESH_INTERVAL_MINUTES)
 async def process_latest_offers():
-    logging.info("Fetching offers")
+    logging.log(INFO_DEBUG, "Fetching offers")
 
     new_offers: List[RentalOffer] = []
     for offer in fetch_latest_offers():
@@ -69,4 +69,14 @@ async def process_latest_offers():
 
 
 if __name__ == "__main__":
+    logging.addLevelName(15, "INFO_DEBUG")
+
+    logging.basicConfig(
+        level=(INFO_DEBUG if DEBUG else logging.INFO),
+        format='%(asctime)s - [%(levelname)s] %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S')
+
+    logging.log(INFO_DEBUG, "Running in debug mode")
+
+    client.logger = logging.getLogger("discord")
     client.run(DISCORD_TOKEN)
