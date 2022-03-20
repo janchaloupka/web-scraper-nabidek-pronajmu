@@ -7,6 +7,7 @@ import requests
 
 class ScraperRealingo(ScraperBase):
 
+    query_url = "https://www.realingo.cz/graphql"
     name = "realingo"
     logo_url = "https://www.realingo.cz/_next/static/media/images/android-chrome-144x144-cf1233ce.png"
     color = 0x00BC78
@@ -76,7 +77,7 @@ class ScraperRealingo(ScraperBase):
 
 
     def get_latest_offers(self) -> List[RentalOffer]:
-        request = requests.post(self.url, headers=self.headers, json=self.json_request)
+        request = requests.post(self.query_url, headers=self.headers, json=self.json_request)
         response = request.json()
 
         items: List[RentalOffer] = []
@@ -84,11 +85,11 @@ class ScraperRealingo(ScraperBase):
         for offer in response["data"]["searchOffer"]["items"]:
             items.append(RentalOffer(
                 scraper = self,
-                link = urljoin(self.url, offer["url"]),
+                link = urljoin(self.query_url, offer["url"]),
                 description = self.category_to_string(offer["category"]) + ", " + str(offer["area"]["main"]) + " m²",
                 location = offer["location"]["address"],
                 price = offer["price"]["total"],
-                image_url = urljoin(self.url, "/static/images/" + (offer["photos"]["main"] or ""))
+                image_url = urljoin(self.query_url, "/static/images/" + (offer["photos"]["main"] or ""))
             ))
 
         return items

@@ -8,6 +8,7 @@ from urllib.parse import urljoin
 
 class ScraperSreality(ScraperBase):
 
+    query_url = "https://www.sreality.cz/api/cs/v2/estates?category_main_cb=1&category_sub_cb=7|11|10|8|12|9|16&category_type_cb=2&locality_district_id=72&locality_region_id=14&per_page=20"
     name = "Sreality"
     logo_url = "https://www.sreality.cz/img/icons/android-chrome-192x192.png"
     color = 0xCC0000
@@ -78,7 +79,7 @@ class ScraperSreality(ScraperBase):
 
 
     def _create_link_to_offer(self, offer) -> str:
-        return urljoin(self.url, "/detail" +
+        return urljoin(self.query_url, "/detail" +
             "/" + self._category_type_to_url[offer["seo"]["category_type_cb"]] +
             "/" + self._category_main_to_url[offer["seo"]["category_main_cb"]] +
             "/" + self._category_sub_to_url[offer["seo"]["category_sub_cb"]] +
@@ -87,7 +88,7 @@ class ScraperSreality(ScraperBase):
 
 
     def get_latest_offers(self) -> List[RentalOffer]:
-        request = requests.get(self.url + "&tms=" + str(int(time())), headers=self.headers)
+        request = requests.get(self.query_url + "&tms=" + str(int(time())), headers=self.headers)
         response = request.json()
 
         items: List[RentalOffer] = []
