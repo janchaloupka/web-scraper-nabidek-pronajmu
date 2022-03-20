@@ -7,7 +7,7 @@ from discord.ext import tasks
 from datetime import datetime
 from discord_logger import DiscordLogger
 from offers_storage import OffersStorage
-from scrapers_manager import fetch_latest_offers
+from scrapers_manager import fetch_latest_offers, scrapers
 from scrapers.rental_offer import RentalOffer
 
 
@@ -27,6 +27,8 @@ async def on_ready():
 
     discord_error_logger = DiscordLogger(client, dev_channel, logging.ERROR)
     logging.getLogger().addHandler(discord_error_logger)
+
+    logging.info("Available scrapers: " + ", ".join([s.name for s in scrapers]))
 
     logging.info("Fetching latest offers every " +
                  str(REFRESH_INTERVAL_MINUTES) + " minutes")
