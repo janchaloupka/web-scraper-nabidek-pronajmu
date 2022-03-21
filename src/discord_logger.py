@@ -8,6 +8,6 @@ class DiscordLogger(logging.Handler):
         self.channel = channel
 
     def emit(self, record: logging.LogRecord):
-        message = "**" + record.levelname + "**\n```\n" + record.getMessage() + "\n```"
+        message = "**{}**\n```\n{}\n```".format(record.levelname, record.getMessage())
 
         self.client.loop.create_task(self.channel.send(message))

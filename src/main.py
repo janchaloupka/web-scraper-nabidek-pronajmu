@@ -30,8 +30,7 @@ async def on_ready():
 
     logging.info("Available scrapers: " + ", ".join([s.name for s in scrapers]))
 
-    logging.info("Fetching latest offers every " +
-                 str(REFRESH_INTERVAL_MINUTES) + " minutes")
+    logging.info("Fetching latest offers every {} minutes".format(REFRESH_INTERVAL_MINUTES))
     process_latest_offers.start()
 
 
@@ -47,7 +46,7 @@ async def process_latest_offers():
     first_time = storage.first_time
     storage.save_offers(new_offers)
 
-    logging.info("Offers fetched (new: " + str(len(new_offers)) + ")")
+    logging.info("Offers fetched (new: {})".format(len(new_offers)))
 
     if not first_time:
         for offer in new_offers:
