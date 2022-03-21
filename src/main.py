@@ -78,5 +78,4 @@ if __name__ == "__main__":
 
     logging.log(INFO_DEBUG, "Running in debug mode")
 
-    client.logger = logging.getLogger("discord")
     client.run(DISCORD_TOKEN)

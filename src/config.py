@@ -2,6 +2,8 @@ import os
 from dotenv import load_dotenv
 
 
+load_dotenv(".env.local")
+
 app_env = os.getenv("APP_ENV")
 if app_env:
     load_dotenv(".env." + app_env)
@@ -9,7 +11,7 @@ if app_env:
 load_dotenv(".env")
 
 
-DEBUG = bool(os.getenv("DEBUG"))
+DEBUG = (os.getenv("DEBUG") == "1")
 
 FOUND_OFFERS_FILE = os.getenv("FOUND_OFFERS_FILE")
 
