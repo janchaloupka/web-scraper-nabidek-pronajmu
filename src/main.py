@@ -11,7 +11,12 @@ from scrapers_manager import fetch_latest_offers, scrapers
 from scrapers.rental_offer import RentalOffer
 
 
+def get_current_daytime() -> bool: return datetime.now().hour in range(6, 22)
+
+
 client = discord.Client()
+daytime = get_current_daytime()
+interval_time = REFRESH_INTERVAL_DAYTIME_MINUTES if daytime else REFRESH_INTERVAL_NIGHTIME_MINUTES
 
 
 @client.event
@@ -30,11 +35,12 @@ async def on_ready():
 
     logging.info("Available scrapers: " + ", ".join([s.name for s in scrapers]))
 
-    logging.info("Fetching latest offers every {} minutes".format(REFRESH_INTERVAL_MINUTES))
+    logging.info("Fetching latest offers every {} minutes".format(interval_time))
+
     process_latest_offers.start()
 
 
-@tasks.loop(minutes=REFRESH_INTERVAL_MINUTES)
+@tasks.loop(minutes=interval_time)
 async def process_latest_offers():
     logging.log(INFO_DEBUG, "Fetching offers")
 
@@ -65,6 +71,16 @@ async def process_latest_offers():
             await channel.send(embed=embed)
     else:
         logging.info("No previous offers, first fetch is running silently")
+
+    global daytime, interval_time
+    if daytime != get_current_daytime():  # Pokud stary daytime neodpovida novemu
+
+        daytime = not daytime  # Zneguj daytime (podle podminky se zmenil)
+
+        interval_time = REFRESH_INTERVAL_DAYTIME_MINUTES if daytime else REFRESH_INTERVAL_NIGHTIME_MINUTES
+
+        logging.info("Fetching latest offers every {} minutes".format(interval_time))
+        process_latest_offers.change_interval(minutes=interval_time)
 
 
 if __name__ == "__main__":
