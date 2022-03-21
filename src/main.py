@@ -5,6 +5,7 @@ from typing import List
 from config import *
 from discord.ext import tasks
 from datetime import datetime
+from time import time
 from discord_logger import DiscordLogger
 from offers_storage import OffersStorage
 from scrapers_manager import fetch_latest_offers, scrapers
@@ -81,6 +82,8 @@ async def process_latest_offers():
 
         logging.info("Fetching latest offers every {} minutes".format(interval_time))
         process_latest_offers.change_interval(minutes=interval_time)
+
+    await channel.edit(topic="Last update {}".format("<t:{}:R>".format(int(time()))))
 
 
 if __name__ == "__main__":
