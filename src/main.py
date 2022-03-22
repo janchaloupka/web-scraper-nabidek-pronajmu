@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/evn python3
 import logging
 import discord
 from typing import List
@@ -61,7 +61,7 @@ async def process_latest_offers():
                 title=offer.description,
                 url=offer.link,
                 description=offer.location,
-                timestamp=datetime.now(),
+                timestamp=datetime.utcnow(),
                 color=offer.scraper.color
             )
 
