@@ -31,7 +31,7 @@ class ScraperIdnesReality(ScraperBase):
                 link = item.find("a", {"class": "c-products__link"}).get('href'),
                 description = ' '.join(item.find("h2", {"class": "c-products__title"}).get_text().strip().splitlines()),
                 location = item.find("p", {"class": "c-products__info"}).get_text().strip(),
-                price = int(re.sub(r"[^\d]", "", item.find("p", {"class": "c-products__price"}).get_text())),
+                price = int(re.sub(r"[^\d]", "", item.find("p", {"class": "c-products__price"}).get_text()) or "0"),
                 image_url = item.find("img").get("data-src")
             ))
 
