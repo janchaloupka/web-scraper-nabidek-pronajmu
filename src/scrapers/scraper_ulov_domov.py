@@ -6,7 +6,7 @@ import requests
 
 class ScraperUlovDomov(ScraperBase):
 
-    query_url = "https://www.ulovdomov.cz/fe-api/find"
+    query_url = "https://www.ulovdomov.cz/fe-api/find/seperated-offers-within-bounds"
     name = "UlovDomov"
     logo_url = "https://www.ulovdomov.cz/favicon.png"
     color = 0xFFFFFF
@@ -19,20 +19,15 @@ class ScraperUlovDomov(ScraperBase):
         "bounds": {
             "north_east": {
                 "lat": 49.294485,
-                "lng": 16.7278532
+                "lng": 16.727853
             },
             "south_west": {
-                "lat": 49.1096552,
-                "lng": 16.4280678
+                "lat": 49.109655,
+                "lng": 16.428068
             }
         },
         "conveniences": [],
-        "dispositions": [
-            7,
-            8,
-            9,
-            16
-        ],
+        "dispositions": [6, 7, 8, 16],
         "furnishing": [],
         "is_price_commision_free": None,
         "limit": 20,
