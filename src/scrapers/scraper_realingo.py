@@ -21,12 +21,9 @@ class ScraperRealingo(ScraperBase):
             "address": "Brno",
             "saved": False,
             "categories": [
+                "FLAT3_KK",
                 "FLAT31",
                 "FLAT4_KK",
-                "FLAT41",
-                "FLAT5_KK",
-                "FLAT51",
-                "FLAT6_AND_MORE",
                 "OTHERS_FLAT"
             ],
             "sort": "NEWEST",
