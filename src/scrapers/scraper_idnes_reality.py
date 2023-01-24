@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 class ScraperIdnesReality(ScraperBase):
 
-    query_url = "https://reality.idnes.cz/s/pronajem/byty/brno-mesto/?s-qc%5BsubtypeFlat%5D%5B0%5D=31&s-qc%5BsubtypeFlat%5D%5B1%5D=4k&s-qc%5BsubtypeFlat%5D%5B2%5D=41&s-qc%5BsubtypeFlat%5D%5B3%5D=5k&s-qc%5BsubtypeFlat%5D%5B4%5D=51&s-qc%5BsubtypeFlat%5D%5B5%5D=6k&s-qc%5BsubtypeFlat%5D%5B6%5D=atypical"
+    query_url = "https://reality.idnes.cz/s/pronajem/byty/brno-mesto/?s-qc%5BsubtypeFlat%5D%5B0%5D=3k&s-qc%5BsubtypeFlat%5D%5B1%5D=31&s-qc%5BsubtypeFlat%5D%5B2%5D=4k&s-qc%5BsubtypeFlat%5D%5B3%5D=atypical"
     name = "iDNES Reality"
     logo_url = "https://sta-reality2.1gr.cz/ui/image/favicons/favicon-32x32.png"
     color = 0x1D80D7
