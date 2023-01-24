@@ -15,7 +15,7 @@ from scrapers.rental_offer import RentalOffer
 def get_current_daytime() -> bool: return datetime.now().hour in range(6, 22)
 
 
-client = discord.Client()
+client = discord.Client(intents=discord.Intents.default())
 daytime = get_current_daytime()
 interval_time = REFRESH_INTERVAL_DAYTIME_MINUTES if daytime else REFRESH_INTERVAL_NIGHTIME_MINUTES
 

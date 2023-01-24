@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 class ScraperRealcity(ScraperBase):
 
-    query_url = "https://www.realcity.cz/pronajem-bytu/brno-4892/3-kk?sp=%7B%22prefLoc%22%3A%5B4892%5D%2C%22mloc%22%3A%7B%22name%22%3A%22Brno%22%7D%2C%22withImage%22%3Atrue%2C%22transactionTypes%22%3A%5B%22rent%22%5D%2C%22propertyTypes%22%3A%5B%7B%22propertyType%22%3A%22flat%22%2C%22options%22%3A%7B%22disposition%22%3A%5B%223%2Bkk%22%2C%223%2B1%22%2C%224%2Bkk%22%2C%224%2B1%22%5D%7D%7D%5D%7D"
+    query_url = "https://www.realcity.cz/pronajem-bytu/brno-mesto-68/3-kk?sp=%7B%22locality%22%3A%5B68%5D%2C%22withImage%22%3Atrue%2C%22transactionTypes%22%3A%5B%22rent%22%5D%2C%22propertyTypes%22%3A%5B%7B%22propertyType%22%3A%22flat%22%2C%22options%22%3A%7B%22disposition%22%3A%5B%223%2Bkk%22%2C%223%2B1%22%2C%224%2Bkk%22%2C%22atyp%22%2C%22disp_nospec%22%5D%7D%7D%5D%7D"
     name = "REALCITY"
     logo_url = "https://files.janchaloupka.cz/realcity.png"
     color = 0xB60D1C

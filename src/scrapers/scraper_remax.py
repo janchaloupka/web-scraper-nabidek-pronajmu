@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 class ScraperRemax(ScraperBase):
 
-    query_url = "https://www.remax-czech.cz/reality/vyhledavani/?regions%5B116%5D%5B3702%5D=on&sale=2&types%5B4%5D%5B5%5D=on&types%5B4%5D%5B6%5D=on&types%5B4%5D%5B7%5D=on&types%5B4%5D%5B8%5D=on&types%5B4%5D%5B11%5D=on&types%5B4%5D%5B12%5D=on&types%5B4%5D%5B13%5D=on&types%5B4%5D%5B14%5D=on&types%5B4%5D%5B15%5D=on&types%5B4%5D%5B16%5D=on&types%5B4%5D%5B17%5D=on&order_by_published_date=0"
+    query_url = "https://www.remax-czech.cz/reality/vyhledavani/?regions%5B116%5D%5B3702%5D=on&sale=2&types%5B4%5D%5B4%5D=on&types%5B4%5D%5B5%5D=on&types%5B4%5D%5B11%5D=on&types%5B4%5D%5B16%5D=on&types%5B4%5D%5B17%5D=on&order_by_published_date=0"
     name = "Remax"
     logo_url = "https://www.remax-czech.cz/apple-touch-icon.png"
     color = 0x003DA5
