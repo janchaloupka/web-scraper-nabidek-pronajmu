@@ -23,7 +23,6 @@ class ScraperRealingo(ScraperBase):
             "categories": [
                 "FLAT3_KK",
                 "FLAT31",
-                "FLAT4_KK",
                 "OTHERS_FLAT"
             ],
             "sort": "NEWEST",

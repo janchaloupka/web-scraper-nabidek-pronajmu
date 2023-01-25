@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 class ScraperBravis(ScraperBase):
 
-    query_url = "https://www.bravis.cz/pronajem-bytu?typ-nemovitosti-byt+3=&typ-nemovitosti-byt+4=&typ-nabidky=pronajem-bytu&lokalita=cele-brno&vybavenost=nezalezi&q=&action=search&s=1-20-order-0"
+    query_url = "https://www.bravis.cz/pronajem-bytu?typ-nemovitosti-byt+3=&typ-nabidky=pronajem-bytu&lokalita=cele-brno&vybavenost=nezalezi&q=&action=search&s=1-20-order-0"
     name = "BRAVIS"
     logo_url = "https://www.bravis.cz/content/img/logo-small.png"
     color = 0xCE0020

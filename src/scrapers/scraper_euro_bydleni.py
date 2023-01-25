@@ -17,7 +17,7 @@ class ScraperEuroBydleni(ScraperBase):
     cookies = {"listing-sort": "sort-added"}
     request_data = {
         "sql[advert_type_eu][]": 7,
-        "sql[advert_subtype_eu][]": [19, 21, 22, 202, 256],
+        "sql[advert_subtype_eu][]": [19, 20],
         "sql[advert_function_eu][]": 3,
         "sql[advert_price_min]": "",
         "sql[advert_price_max]": "",
