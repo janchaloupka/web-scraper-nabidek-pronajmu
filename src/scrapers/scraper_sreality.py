@@ -94,6 +94,10 @@ class ScraperSreality(ScraperBase):
         items: List[RentalOffer] = []
 
         for item in response["_embedded"]["estates"]:
+            # Ignorovat "tip" nabídky, které úplně neodpovídají filtrům a mění se s každým vyhledáváním
+            if item["region_tip"] > 0:
+                continue
+
             items.append(RentalOffer(
                 scraper = self,
                 link = self._create_link_to_offer(item),
