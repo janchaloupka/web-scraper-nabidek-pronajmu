@@ -27,7 +27,7 @@ class ScraperUlovDomov(ScraperBase):
             }
         },
         "conveniences": [],
-        "dispositions": [6, 7, 8, 16],
+        "dispositions": [6, 7, 16],
         "furnishing": [],
         "is_price_commision_free": None,
         "limit": 20,

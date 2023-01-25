@@ -8,7 +8,7 @@ from urllib.parse import urljoin
 
 class ScraperSreality(ScraperBase):
 
-    query_url = "https://www.sreality.cz/api/cs/v2/estates?category_main_cb=1&category_sub_cb=6|7|8|16&category_type_cb=2&locality_district_id=72&locality_region_id=14&per_page=20"
+    query_url = "https://www.sreality.cz/api/cs/v2/estates?category_main_cb=1&category_sub_cb=6|7|16&category_type_cb=2&locality_district_id=72&locality_region_id=14&per_page=20"
     name = "Sreality"
     logo_url = "https://www.sreality.cz/img/icons/android-chrome-192x192.png"
     color = 0xCC0000
