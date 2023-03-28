@@ -8,7 +8,7 @@ from datetime import datetime
 from time import time
 from discord_logger import DiscordLogger
 from offers_storage import OffersStorage
-from scrapers_manager import fetch_latest_offers, scrapers
+from scrapers_manager import create_scrapers, fetch_latest_offers
 from scrapers.rental_offer import RentalOffer
 
 
@@ -18,6 +18,8 @@ def get_current_daytime() -> bool: return datetime.now().hour in range(6, 22)
 client = discord.Client(intents=discord.Intents.default())
 daytime = get_current_daytime()
 interval_time = REFRESH_INTERVAL_DAYTIME_MINUTES if daytime else REFRESH_INTERVAL_NIGHTIME_MINUTES
+
+scrapers = create_scrapers(dispositions) # TODO dát konfigurované dispozice
 
 
 @client.event
@@ -46,7 +48,7 @@ async def process_latest_offers():
     logging.log(INFO_DEBUG, "Fetching offers")
 
     new_offers: List[RentalOffer] = []
-    for offer in fetch_latest_offers():
+    for offer in fetch_latest_offers(scrapers):
         if not storage.contains(offer):
             new_offers.append(offer)
 
