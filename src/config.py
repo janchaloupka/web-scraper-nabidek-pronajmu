@@ -1,14 +1,13 @@
 import os
 from dotenv import load_dotenv
 
-
-load_dotenv(".env.local")
+load_dotenv(".env")
 
 app_env = os.getenv("APP_ENV")
 if app_env:
     load_dotenv(".env." + app_env)
 
-load_dotenv(".env")
+load_dotenv(".env.local", override=True)
 
 
 DEBUG = (os.getenv("DEBUG") == "1")
