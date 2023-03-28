@@ -45,7 +45,7 @@ async def on_ready():
 
 @tasks.loop(minutes=interval_time)
 async def process_latest_offers():
-    logging.log(config.info_debug_level, "Fetching offers")
+    logging.info("Fetching offers")
 
     new_offers: list[RentalOffer] = []
     for offer in fetch_latest_offers(scrapers):
@@ -89,13 +89,11 @@ async def process_latest_offers():
 
 
 if __name__ == "__main__":
-    logging.addLevelName(15, "INFO_DEBUG")
-
     logging.basicConfig(
-        level=(config.info_debug_level if config.debug else logging.INFO),
+        level=(logging.DEBUG if config.debug else logging.INFO),
         format='%(asctime)s - [%(levelname)s] %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S')
 
-    logging.log(config.debug, "Running in debug mode")
+    logging.debug("Running in debug mode")
 
-    client.run(config.discord.token)
+    client.run(config.discord.token, log_level=logging.INFO)

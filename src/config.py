@@ -35,8 +35,6 @@ def dispositions_converter(raw_disps: str):
 
 @environ.config(prefix="")
 class Config:
-    info_debug_level: int = environ.var(converter=int, default=15)
-
     debug: bool = environ.bool_var()
     found_offers_file: Path = environ.var(converter=Path)
     refresh_interval_daytime_minutes: int = environ.var(converter=int)
