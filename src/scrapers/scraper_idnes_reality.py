@@ -19,20 +19,20 @@ class ScraperIdnesReality(ScraperBase):
     color = 0x1D80D7
 
     disposition_mapping = {
-        Disposition.FLAT_1KK: "s-qc%5BsubtypeFlat%5D%5B0%5D=1k",
-        Disposition.FLAT_1: "s-qc%5BsubtypeFlat%5D%5B0%5D=11",
-        Disposition.FLAT_2KK: "s-qc%5BsubtypeFlat%5D%5B0%5D=2k",
-        Disposition.FLAT_2: "s-qc%5BsubtypeFlat%5D%5B0%5D=21",
-        Disposition.FLAT_3KK: "s-qc%5BsubtypeFlat%5D%5B0%5D=3k",
-        Disposition.FLAT_3: "s-qc%5BsubtypeFlat%5D%5B0%5D=31",
-        Disposition.FLAT_4KK: "s-qc%5BsubtypeFlat%5D%5B0%5D=4k",
-        Disposition.FLAT_4: "s-qc%5BsubtypeFlat%5D%5B0%5D=41",
+        Disposition.FLAT_1KK: "s-qc%5BsubtypeFlat%5D%5B%5D=1k",
+        Disposition.FLAT_1: "s-qc%5BsubtypeFlat%5D%5B%5D=11",
+        Disposition.FLAT_2KK: "s-qc%5BsubtypeFlat%5D%5B%5D=2k",
+        Disposition.FLAT_2: "s-qc%5BsubtypeFlat%5D%5B%5D=21",
+        Disposition.FLAT_3KK: "s-qc%5BsubtypeFlat%5D%5B%5D=3k",
+        Disposition.FLAT_3: "s-qc%5BsubtypeFlat%5D%5B%5D=31",
+        Disposition.FLAT_4KK: "s-qc%5BsubtypeFlat%5D%5B%5D=4k",
+        Disposition.FLAT_4: "s-qc%5BsubtypeFlat%5D%5B%5D=41",
         Disposition.FLAT_5_UP: (
-            "s-qc%5BsubtypeFlat%5D%5B0%5D=5k",
-            "s-qc%5BsubtypeFlat%5D%5B0%5D=51",
-            "s-qc%5BsubtypeFlat%5D%5B0%5D=6k", # 6 a víc
+            "s-qc%5BsubtypeFlat%5D%5B%5D=5k",
+            "s-qc%5BsubtypeFlat%5D%5B%5D=51",
+            "s-qc%5BsubtypeFlat%5D%5B%5D=6k", # 6 a víc
         ),
-        Disposition.FLAT_OTHERS: "s-qc%5BsubtypeFlat%5D%5B0%5D=atypical", # atyp
+        Disposition.FLAT_OTHERS: "s-qc%5BsubtypeFlat%5D%5B%5D=atypical", # atyp
     }
 
 
