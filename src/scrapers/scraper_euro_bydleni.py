@@ -1,51 +1,70 @@
 import re
 import requests
 from typing import List
+from disposition import Disposition
 from scrapers.scraper_base import ScraperBase
 from scrapers.rental_offer import RentalOffer
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
+from utils import flatten
 
 
 class ScraperEuroBydleni(ScraperBase):
 
-    query_url = "https://www.eurobydleni.cz/search-form"
     name = "Eurobydlení"
     logo_url = "https://files.janchaloupka.cz/eurobydleni.png"
     color = 0xFA0F54
 
+    request_url = "https://www.eurobydleni.cz/search-form"
     cookies = {"listing-sort": "sort-added"}
-    request_data = {
-        "sql[advert_type_eu][]": 7,
-        "sql[advert_subtype_eu][]": [19, 20],
-        "sql[advert_function_eu][]": 3,
-        "sql[advert_price_min]": "",
-        "sql[advert_price_max]": "",
-        "sql[usable_area_min]": "",
-        "sql[usable_area_max]": "",
-        "sql[estate_area_min]": "",
-        "sql[estate_area_max]": "",
-        "sql[locality][locality][input]": "Brno, Česko",
-        "sql[locality][locality][city]": "Brno, Česko",
-        "sql[locality][locality][zip_code]": "",
-        "sql[locality][locality][types]": "locality",
-        "sql[locality][location][lat]": "49.1950602",
-        "sql[locality][location][lng]": "16.6068371",
-        "sql[locality][viewport][south]": "49.10965517428777",
-        "sql[locality][viewport][west]": "16.42806782678905",
-        "sql[locality][viewport][north]": "49.294484956308",
-        "sql[locality][viewport][east]": "16.72785321479357",
-        "sql[poptavka][jmeno]": "",
-        "sql[poptavka][prijmeni]": "",
-        "sql[poptavka][email]": "",
-        "sql[poptavka][telefon]": ""
+    disposition_mapping = {
+        Disposition.FLAT_1: 15,
+        Disposition.FLAT_1KK: 16,
+        Disposition.FLAT_2: 17,
+        Disposition.FLAT_2KK: 18,
+        Disposition.FLAT_3: 19,
+        Disposition.FLAT_3KK: 20,
+        Disposition.FLAT_4: 21,
+        Disposition.FLAT_4KK: 22,
+        Disposition.FLAT_5_UP: (202, 256), # (5+1, 5kk)
+        Disposition.FLAT_OTHERS: (14, 857), # (Garsonka, Apartman)
     }
 
 
+    def build_response(self) -> requests.Response:
+        request_data = {
+            "sql[advert_type_eu][]": 7,
+            "sql[advert_subtype_eu][]": flatten([self.disposition_mapping[d] for d in self.disposition]),
+            "sql[advert_function_eu][]": 3,
+            "sql[advert_price_min]": "",
+            "sql[advert_price_max]": "",
+            "sql[usable_area_min]": "",
+            "sql[usable_area_max]": "",
+            "sql[estate_area_min]": "",
+            "sql[estate_area_max]": "",
+            "sql[locality][locality][input]": "Brno, Česko",
+            "sql[locality][locality][city]": "Brno, Česko",
+            "sql[locality][locality][zip_code]": "",
+            "sql[locality][locality][types]": "locality",
+            "sql[locality][location][lat]": "49.1950602",
+            "sql[locality][location][lng]": "16.6068371",
+            "sql[locality][viewport][south]": "49.10965517428777",
+            "sql[locality][viewport][west]": "16.42806782678905",
+            "sql[locality][viewport][north]": "49.294484956308",
+            "sql[locality][viewport][east]": "16.72785321479357",
+            "sql[poptavka][jmeno]": "",
+            "sql[poptavka][prijmeni]": "",
+            "sql[poptavka][email]": "",
+            "sql[poptavka][telefon]": ""
+        }
+
+        response = requests.post(self.request_url, headers=self.headers, cookies=self.cookies, data=request_data)
+        response.encoding = "utf-8"
+        return response
+
     def get_latest_offers(self) -> List[RentalOffer]:
-        request = requests.post(self.query_url, headers=self.headers, cookies=self.cookies, data=self.request_data)
-        request.encoding = "utf-8"
-        soup = BeautifulSoup(request.text, 'html.parser')
+        response = self.build_response()
+        soup = BeautifulSoup(response.text, 'html.parser')
 
         items: List[RentalOffer] = []
 
