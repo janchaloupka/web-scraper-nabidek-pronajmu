@@ -1,5 +1,10 @@
 import os
 from dotenv import load_dotenv
+from disposition import Disposition
+import functools
+import operator
+import environ
+from pathlib import Path
 
 load_dotenv(".env")
 
@@ -9,19 +14,39 @@ if app_env:
 
 load_dotenv(".env.local", override=True)
 
+_str_to_disposition_map = {
+    "1+kk": Disposition.FLAT_1KK,
+    "1+1": Disposition.FLAT_1,
+    "2+kk": Disposition.FLAT_2KK,
+    "2+1": Disposition.FLAT_2,
+    "3+kk": Disposition.FLAT_3KK,
+    "3+1": Disposition.FLAT_3,
+    "4+kk": Disposition.FLAT_4KK,
+    "4+1": Disposition.FLAT_4,
+    "5++": Disposition.FLAT_5_UP,
+    "others": Disposition.FLAT_OTHERS
+} 
 
-DEBUG = (os.getenv("DEBUG") == "1")
+def dispositions_converter(raw_disps: str):
+    return functools.reduce(operator.or_, map(lambda d: _str_to_disposition_map[d], raw_disps.split(",")), Disposition.NONE)
 
-FOUND_OFFERS_FILE = os.getenv("FOUND_OFFERS_FILE")
 
-REFRESH_INTERVAL_DAYTIME_MINUTES = int(os.getenv("REFRESH_INTERVAL_DAYTIME_MINUTES"))
+@environ.config(prefix="")
+class Config:
+    info_debug_level = environ.var(converter=int, default=15)
 
-REFRESH_INTERVAL_NIGHTIME_MINUTES = int(os.getenv("REFRESH_INTERVAL_NIGHTTIME_MINUTES"))
+    debug = environ.bool_var()
+    found_offers_file = environ.var(converter=Path)
+    refresh_interval_daytime_minutes = environ.var(converter=int)
+    refresh_interval_nighttime_minutes = environ.var(converter=int)
+    dispositions = environ.var(converter=dispositions_converter)
 
-DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+    @environ.config()
+    class Discord:
+        token = environ.var()
+        offers_channel = environ.var(converter=int)
+        dev_channel = environ.var(converter=int)
 
-DISCORD_OFFERS_CHANNEL = int(os.getenv('DISCORD_OFFERS_CHANNEL'))
+    discord: Discord = environ.group(Discord)
 
-DISCORD_DEV_CHANNEL = int(os.getenv('DISCORD_DEV_CHANNEL'))
-
-INFO_DEBUG = 15
+config: Config = Config.from_environ()

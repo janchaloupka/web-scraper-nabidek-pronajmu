@@ -1,6 +1,7 @@
 from enum import Flag, auto
 
 class Disposition(Flag):
+    NONE        = 0
     FLAT_1KK    = auto() # 1kk
     FLAT_1      = auto() # 1+1
     FLAT_2KK    = auto() # 2kk
