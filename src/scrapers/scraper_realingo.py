@@ -1,6 +1,5 @@
 import json
 import logging
-from typing import List
 from urllib.parse import urljoin
 
 import requests
@@ -49,7 +48,7 @@ class ScraperRealingo(ScraperBase):
             }
         }
 
-        logging.info("realingo request: %s", json.dumps(json_request))
+        logging.debug("realingo request: %s", json.dumps(json_request))
 
         return requests.post(self.base_url, headers=self.headers, json=json_request)
 
@@ -94,10 +93,10 @@ class ScraperRealingo(ScraperBase):
         }.get(id, "")
 
 
-    def get_latest_offers(self) -> List[RentalOffer]:
+    def get_latest_offers(self) -> list[RentalOffer]:
         response = self.build_response().json()
 
-        items: List[RentalOffer] = []
+        items: list[RentalOffer] = []
 
         for offer in response["data"]["searchOffer"]["items"]:
             items.append(RentalOffer(

@@ -2,14 +2,12 @@
 import logging
 from datetime import datetime
 from time import time
-from typing import List
 
 import discord
 from discord.ext import tasks
 
 from config import *
 from discord_logger import DiscordLogger
-from disposition import Disposition
 from offers_storage import OffersStorage
 from scrapers.rental_offer import RentalOffer
 from scrapers_manager import create_scrapers, fetch_latest_offers
@@ -49,13 +47,13 @@ async def on_ready():
 async def process_latest_offers():
     logging.log(config.info_debug_level, "Fetching offers")
 
-    new_offers: List[RentalOffer] = []
+    new_offers: list[RentalOffer] = []
     for offer in fetch_latest_offers(scrapers):
-        if not config.found_offers_file.contains(offer):
+        if not storage.contains(offer):
             new_offers.append(offer)
 
-    first_time = config.found_offers_file.first_time
-    config.found_offers_file.save_offers(new_offers)
+    first_time = storage.first_time
+    storage.save_offers(new_offers)
 
     logging.info("Offers fetched (new: {})".format(len(new_offers)))
 

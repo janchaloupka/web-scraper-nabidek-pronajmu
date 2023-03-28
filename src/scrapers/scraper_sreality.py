@@ -1,6 +1,5 @@
 import logging
 from time import time
-from typing import List
 from urllib.parse import urljoin
 
 import requests
@@ -22,16 +21,16 @@ class ScraperSreality(ScraperBase):
     base_url = "https://www.sreality.cz"
 
     disposition_mapping = {
-        Disposition.FLAT_1KK: 2,
-        Disposition.FLAT_1: 3,
-        Disposition.FLAT_2KK: 4,
-        Disposition.FLAT_2: 5,
-        Disposition.FLAT_3KK: 6,
-        Disposition.FLAT_3: 7,
-        Disposition.FLAT_4KK: 8,
-        Disposition.FLAT_4: 9,
-        Disposition.FLAT_5_UP: (10, 11, 12),
-        Disposition.FLAT_OTHERS: 16,
+        Disposition.FLAT_1KK: "2",
+        Disposition.FLAT_1: "3",
+        Disposition.FLAT_2KK: "4",
+        Disposition.FLAT_2: "5",
+        Disposition.FLAT_3KK: "6",
+        Disposition.FLAT_3: "7",
+        Disposition.FLAT_4KK: "8",
+        Disposition.FLAT_4: "9",
+        Disposition.FLAT_5_UP: ("10", "11", "12"),
+        Disposition.FLAT_OTHERS: "16",
     }
 
     _category_type_to_url = {
@@ -113,14 +112,14 @@ class ScraperSreality(ScraperBase):
         url += "&category_type_cb=2&locality_district_id=72&locality_region_id=14&per_page=20"
         url += "&tms=" + str(int(time()))
 
-        logging.info("Sreality request: %s", url)
+        logging.debug("Sreality request: %s", url)
 
         return requests.get(url, headers=self.headers)
 
-    def get_latest_offers(self) -> List[RentalOffer]:
+    def get_latest_offers(self) -> list[RentalOffer]:
         response = self.build_response().json()
 
-        items: List[RentalOffer] = []
+        items: list[RentalOffer] = []
 
         for item in response["_embedded"]["estates"]:
             # Ignorovat "tip" nabídky, které úplně neodpovídají filtrům a mění se s každým vyhledáváním

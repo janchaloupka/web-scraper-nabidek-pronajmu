@@ -1,6 +1,5 @@
 import json
 import logging
-from typing import List
 
 import requests
 
@@ -90,14 +89,14 @@ class ScraperUlovDomov(ScraperBase):
             "sticker": None
         }
 
-        logging.info("UlovDomov request: %s", json.dumps(json_request))
+        logging.debug("UlovDomov request: %s", json.dumps(json_request))
 
         return requests.post(self.base_url, headers=self.headers, json=json_request)
 
-    def get_latest_offers(self) -> List[RentalOffer]:
+    def get_latest_offers(self) -> list[RentalOffer]:
         response = self.build_response().json()
 
-        items: List[RentalOffer] = []
+        items: list[RentalOffer] = []
         for offer in response["offers"]:
             items.append(RentalOffer(
                 scraper = self,

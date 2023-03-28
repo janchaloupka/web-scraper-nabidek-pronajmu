@@ -1,5 +1,4 @@
 import os
-from typing import List, Set
 
 from scrapers.rental_offer import RentalOffer
 
@@ -14,7 +13,7 @@ class OffersStorage:
         self.first_time = False
         """Neproběhl pokus o uložení nabídek (soubor neexistuje)"""
 
-        self._links: Set[str] = set()
+        self._links: set[str] = set()
         """Seznam URL odkazů na všechny nalezené nabídky"""
 
         try:
@@ -37,11 +36,11 @@ class OffersStorage:
         return offer.link in self._links
 
 
-    def save_offers(self, offers: List[RentalOffer]):
+    def save_offers(self, offers: list[RentalOffer]):
         """Uložit nabídky jako nalezené
 
         Args:
-            offers (List[RentalOffer]): Nalezené nabídky
+            offers (list[RentalOffer]): Nalezené nabídky
         """
         with open(self.path, 'a+') as file_object:
             for offer in offers:

@@ -1,7 +1,6 @@
 import json
 import logging
 import re
-from typing import List
 from urllib.parse import urljoin
 
 import requests
@@ -64,17 +63,17 @@ class ScraperEuroBydleni(ScraperBase):
             "sql[poptavka][telefon]": ""
         }
 
-        logging.info("EuroBydlení request: %s", json.dumps(request_data))
+        logging.debug("EuroBydlení request: %s", json.dumps(request_data))
 
         response = requests.post(self.base_url, headers=self.headers, cookies=self.cookies, data=request_data)
         response.encoding = "utf-8"
         return response
 
-    def get_latest_offers(self) -> List[RentalOffer]:
+    def get_latest_offers(self) -> list[RentalOffer]:
         response = self.build_response()
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        items: List[RentalOffer] = []
+        items: list[RentalOffer] = []
 
         offers = soup.find(id="properties-box")
         for item in offers.find_all("li", {"class": "list-items__item"}):

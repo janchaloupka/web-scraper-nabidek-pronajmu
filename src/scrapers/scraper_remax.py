@@ -1,6 +1,5 @@
 import logging
 import re
-from typing import List
 from urllib.parse import urljoin
 
 import requests
@@ -50,15 +49,15 @@ class ScraperRemax(ScraperBase):
         url += "".join(self.get_dispositions_data())
         url += "&order_by_published_date=0"
 
-        logging.info("Remax request: %s", url)
+        logging.debug("Remax request: %s", url)
 
         return requests.get(url, headers=self.headers)
 
-    def get_latest_offers(self) -> List[RentalOffer]:
+    def get_latest_offers(self) -> list[RentalOffer]:
         response = self.build_response()
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        items: List[RentalOffer] = []
+        items: list[RentalOffer] = []
 
         for item in soup.select("#list .container-fluid .pl-items .pl-items__item"):
             items.append(RentalOffer(

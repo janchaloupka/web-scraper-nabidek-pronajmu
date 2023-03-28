@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, List
+from typing import Any
 
 from requests import Response
 
@@ -39,7 +39,7 @@ class ScraperBase():
         self.disposition = disposition
 
     def get_dispositions_data(self) -> list:
-        list(flatten([self.disposition_mapping[d] for d in self.disposition]))
+        return list(flatten([self.disposition_mapping[d] for d in self.disposition]))
 
     @abstractmethod
     def build_response() -> Response:
@@ -54,13 +54,13 @@ class ScraperBase():
         raise NotImplementedError("Server request builder is not implemeneted")
 
     @abstractmethod
-    def get_latest_offers() -> List[RentalOffer]:
+    def get_latest_offers() -> list[RentalOffer]:
         """Načte a vrátí seznam nejnovějších nabídek bytů k pronájmu z dané služby
 
         Raises:
             NotImplementedError: Pokud potomek neimplementuje tuto metodu
 
         Returns:
-            List[RentalOffer]: Seznam nabízených bytů k pronájmu
+            list[RentalOffer]: Seznam nabízených bytů k pronájmu
         """
         raise NotImplementedError("Fetching new results is not implemeneted")

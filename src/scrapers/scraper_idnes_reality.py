@@ -1,6 +1,5 @@
 import logging
 import re
-from typing import List
 
 import requests
 from bs4 import BeautifulSoup
@@ -41,15 +40,15 @@ class ScraperIdnesReality(ScraperBase):
         url = "https://reality.idnes.cz/s/pronajem/byty/brno-mesto/?"
         url += "&".join(self.get_dispositions_data())
 
-        logging.info("iDNES reality request: %s", url)
+        logging.debug("iDNES reality request: %s", url)
 
         return requests.get(url, headers=self.headers)
 
-    def get_latest_offers(self) -> List[RentalOffer]:
+    def get_latest_offers(self) -> list[RentalOffer]:
         response = self.build_response()
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        items: List[RentalOffer] = []
+        items: list[RentalOffer] = []
 
         offers = soup.find(id="snippet-s-result-articles")
         for item in offers.find_all("div", {"class": "c-products__item"}):

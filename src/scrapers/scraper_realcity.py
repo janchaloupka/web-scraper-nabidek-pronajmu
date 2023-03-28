@@ -1,6 +1,5 @@
 import logging
 import re
-from typing import List
 
 import requests
 from bs4 import BeautifulSoup
@@ -38,15 +37,15 @@ class ScraperRealcity(ScraperBase):
         url += "%2C".join(self.get_dispositions_data())
         url += "%5D%7D%7D%5D%7D"
 
-        logging.info("REALCITY request: %s", url)
+        logging.debug("REALCITY request: %s", url)
 
         return requests.get(url, headers=self.headers)
 
-    def get_latest_offers(self) -> List[RentalOffer]:
+    def get_latest_offers(self) -> list[RentalOffer]:
         response = self.build_response()
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        items: List[RentalOffer] = []
+        items: list[RentalOffer] = []
 
         for item in soup.select("#rc-advertise-result .media.advertise.item"):
             image = item.find("div", "pull-left image")

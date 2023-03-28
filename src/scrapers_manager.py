@@ -1,6 +1,5 @@
 import logging
 import traceback
-from typing import List
 
 from config import *
 from disposition import Disposition
@@ -16,7 +15,7 @@ from scrapers.scraper_sreality import ScraperSreality
 from scrapers.scraper_ulov_domov import ScraperUlovDomov
 
 
-def create_scrapers(dispositions: Disposition) -> List[ScraperBase]:
+def create_scrapers(dispositions: Disposition) -> list[ScraperBase]:
     return [
         ScraperBravis(dispositions),
         ScraperEuroBydleni(dispositions),
@@ -29,14 +28,14 @@ def create_scrapers(dispositions: Disposition) -> List[ScraperBase]:
     ]
 
 
-def fetch_latest_offers(scrapers: List[ScraperBase]) -> List[RentalOffer]:
+def fetch_latest_offers(scrapers: list[ScraperBase]) -> list[RentalOffer]:
     """Získá všechny nejnovější nabídky z dostupných serverů
 
     Returns:
-        List[RentalOffer]: Seznam nabídek
+        list[RentalOffer]: Seznam nabídek
     """
 
-    offers: List[RentalOffer] = []
+    offers: list[RentalOffer] = []
     for scraper in scrapers:
         try:
             for offer in scraper.get_latest_offers():
