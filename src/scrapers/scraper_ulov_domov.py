@@ -1,4 +1,10 @@
-from typing import List
+import json
+import logging
+
+import requests
+
+from disposition import Disposition
+from scrapers.rental_offer import RentalOffer
 from scrapers.scraper_base import ScraperBase
 from scrapers.rental_offer import RentalOffer
 import requests
@@ -6,38 +12,22 @@ import requests
 
 class ScraperUlovDomov(ScraperBase):
 
-    query_url = "https://www.ulovdomov.cz/fe-api/find/seperated-offers-within-bounds"
     name = "UlovDomov"
     logo_url = "https://www.ulovdomov.cz/favicon.png"
     color = 0xFFFFFF
+    base_url = "https://www.ulovdomov.cz/fe-api/find/seperated-offers-within-bounds"
 
-    json_request = {
-        "acreage_from": "",
-        "acreage_to": "",
-        "added_before": "",
-        "banner_panel_width_type": 480,
-        "bounds": {
-            "north_east": {
-                "lat": 49.294485,
-                "lng": 16.727853
-            },
-            "south_west": {
-                "lat": 49.109655,
-                "lng": 16.428068
-            }
-        },
-        "conveniences": [],
-        "dispositions": [6, 7, 16],
-        "furnishing": [],
-        "is_price_commision_free": None,
-        "limit": 20,
-        "offer_type_id": None,
-        "page": 1,
-        "price_from": "",
-        "price_to": "",
-        "query": "",
-        "sort_by": "date:desc",
-        "sticker": None
+    disposition_mapping = {
+        Disposition.FLAT_1KK: 2,
+        Disposition.FLAT_1: 3,
+        Disposition.FLAT_2KK: 4,
+        Disposition.FLAT_2: 5,
+        Disposition.FLAT_3KK: 6,
+        Disposition.FLAT_3: 7,
+        Disposition.FLAT_4KK: 8,
+        Disposition.FLAT_4: 9,
+        Disposition.FLAT_5_UP: (10, 11, 12, 13, 14, 15), # 5kk, 5+1, 6kk, 6+1, 7kk, 7+1
+        Disposition.FLAT_OTHERS: 16,
     }
 
 
@@ -69,11 +59,44 @@ class ScraperUlovDomov(ScraperBase):
             "5_and_more": "5 a více"
         }.get(id, "")
 
-    def get_latest_offers(self) -> List[RentalOffer]:
-        request = requests.post(self.query_url, headers=self.headers, json=self.json_request)
-        response = request.json()
+    def build_response(self) -> requests.Response:
+        json_request = {
+            "acreage_from": "",
+            "acreage_to": "",
+            "added_before": "",
+            "banner_panel_width_type": 480,
+            "bounds": {
+                "north_east": {
+                    "lat": 49.294485,
+                    "lng": 16.727853
+                },
+                "south_west": {
+                    "lat": 49.109655,
+                    "lng": 16.428068
+                }
+            },
+            "conveniences": [],
+            "dispositions": self.get_dispositions_data(),
+            "furnishing": [],
+            "is_price_commision_free": None,
+            "limit": 20,
+            "offer_type_id": None,
+            "page": 1,
+            "price_from": "",
+            "price_to": "",
+            "query": "",
+            "sort_by": "date:desc",
+            "sticker": None
+        }
 
-        items: List[RentalOffer] = []
+        logging.debug("UlovDomov request: %s", json.dumps(json_request))
+
+        return requests.post(self.base_url, headers=self.headers, json=json_request)
+
+    def get_latest_offers(self) -> list[RentalOffer]:
+        response = self.build_response().json()
+
+        items: list[RentalOffer] = []
         for offer in response["offers"]:
             items.append(RentalOffer(
                 scraper = self,

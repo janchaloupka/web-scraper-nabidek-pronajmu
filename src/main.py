@@ -1,15 +1,16 @@
 #!/usr/bin/evn python3
 import logging
-import discord
-from typing import List
-from config import *
-from discord.ext import tasks
 from datetime import datetime
 from time import time
+
+import discord
+from discord.ext import tasks
+
+from config import *
 from discord_logger import DiscordLogger
 from offers_storage import OffersStorage
-from scrapers_manager import fetch_latest_offers, scrapers
 from scrapers.rental_offer import RentalOffer
+from scrapers_manager import create_scrapers, fetch_latest_offers
 
 
 def get_current_daytime() -> bool: return datetime.now().hour in range(6, 22)
@@ -17,18 +18,19 @@ def get_current_daytime() -> bool: return datetime.now().hour in range(6, 22)
 
 client = discord.Client(intents=discord.Intents.default())
 daytime = get_current_daytime()
-interval_time = REFRESH_INTERVAL_DAYTIME_MINUTES if daytime else REFRESH_INTERVAL_NIGHTIME_MINUTES
+interval_time = config.refresh_interval_daytime_minutes if daytime else config.refresh_interval_nighttime_minutes
 
+scrapers = create_scrapers(config.dispositions)
 
 @client.event
 async def on_ready():
     global channel, storage
 
-    dev_channel = client.get_channel(DISCORD_DEV_CHANNEL)
-    channel = client.get_channel(DISCORD_OFFERS_CHANNEL)
-    storage = OffersStorage(FOUND_OFFERS_FILE)
+    dev_channel = client.get_channel(config.discord.dev_channel)
+    channel = client.get_channel(config.discord.offers_channel)
+    storage = OffersStorage(config.found_offers_file)
 
-    if not DEBUG:
+    if not config.debug:
         discord_error_logger = DiscordLogger(client, dev_channel, logging.ERROR)
         logging.getLogger().addHandler(discord_error_logger)
     else:
@@ -43,10 +45,10 @@ async def on_ready():
 
 @tasks.loop(minutes=interval_time)
 async def process_latest_offers():
-    logging.log(INFO_DEBUG, "Fetching offers")
+    logging.info("Fetching offers")
 
-    new_offers: List[RentalOffer] = []
-    for offer in fetch_latest_offers():
+    new_offers: list[RentalOffer] = []
+    for offer in fetch_latest_offers(scrapers):
         if not storage.contains(offer):
             new_offers.append(offer)
 
@@ -78,7 +80,7 @@ async def process_latest_offers():
 
         daytime = not daytime  # Zneguj daytime (podle podminky se zmenil)
 
-        interval_time = REFRESH_INTERVAL_DAYTIME_MINUTES if daytime else REFRESH_INTERVAL_NIGHTIME_MINUTES
+        interval_time = config.refresh_interval_daytime_minutes if daytime else config.refresh_interval_nighttime_minutes
 
         logging.info("Fetching latest offers every {} minutes".format(interval_time))
         process_latest_offers.change_interval(minutes=interval_time)
@@ -87,13 +89,11 @@ async def process_latest_offers():
 
 
 if __name__ == "__main__":
-    logging.addLevelName(15, "INFO_DEBUG")
-
     logging.basicConfig(
-        level=(INFO_DEBUG if DEBUG else logging.INFO),
+        level=(logging.DEBUG if config.debug else logging.INFO),
         format='%(asctime)s - [%(levelname)s] %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S')
 
-    logging.log(INFO_DEBUG, "Running in debug mode")
+    logging.debug("Running in debug mode")
 
-    client.run(DISCORD_TOKEN)
+    client.run(config.discord.token, log_level=logging.INFO)

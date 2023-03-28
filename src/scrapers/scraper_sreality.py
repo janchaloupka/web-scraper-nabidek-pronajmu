@@ -1,4 +1,11 @@
-from typing import List
+import logging
+from time import time
+from urllib.parse import urljoin
+
+import requests
+
+from disposition import Disposition
+from scrapers.rental_offer import RentalOffer
 from scrapers.scraper_base import ScraperBase
 from scrapers.rental_offer import RentalOffer
 from time import time
@@ -8,10 +15,23 @@ from urllib.parse import urljoin
 
 class ScraperSreality(ScraperBase):
 
-    query_url = "https://www.sreality.cz/api/cs/v2/estates?category_main_cb=1&category_sub_cb=6|7|16&category_type_cb=2&locality_district_id=72&locality_region_id=14&per_page=20"
     name = "Sreality"
     logo_url = "https://www.sreality.cz/img/icons/android-chrome-192x192.png"
     color = 0xCC0000
+    base_url = "https://www.sreality.cz"
+
+    disposition_mapping = {
+        Disposition.FLAT_1KK: "2",
+        Disposition.FLAT_1: "3",
+        Disposition.FLAT_2KK: "4",
+        Disposition.FLAT_2: "5",
+        Disposition.FLAT_3KK: "6",
+        Disposition.FLAT_3: "7",
+        Disposition.FLAT_4KK: "8",
+        Disposition.FLAT_4: "9",
+        Disposition.FLAT_5_UP: ("10", "11", "12"),
+        Disposition.FLAT_OTHERS: "16",
+    }
 
     _category_type_to_url = {
         0: "vse",
@@ -79,19 +99,27 @@ class ScraperSreality(ScraperBase):
 
 
     def _create_link_to_offer(self, offer) -> str:
-        return urljoin(self.query_url, "/detail" +
+        return urljoin(self.base_url, "/detail" +
             "/" + self._category_type_to_url[offer["seo"]["category_type_cb"]] +
             "/" + self._category_main_to_url[offer["seo"]["category_main_cb"]] +
             "/" + self._category_sub_to_url[offer["seo"]["category_sub_cb"]] +
             "/" + offer["seo"]["locality"] +
             "/" + str(offer["hash_id"]))
 
+    def build_response(self) -> requests.Response:
+        url = self.base_url + "/api/cs/v2/estates?category_main_cb=1&category_sub_cb="
+        url += "|".join(self.get_dispositions_data())
+        url += "&category_type_cb=2&locality_district_id=72&locality_region_id=14&per_page=20"
+        url += "&tms=" + str(int(time()))
 
-    def get_latest_offers(self) -> List[RentalOffer]:
-        request = requests.get(self.query_url + "&tms=" + str(int(time())), headers=self.headers)
-        response = request.json()
+        logging.debug("Sreality request: %s", url)
 
-        items: List[RentalOffer] = []
+        return requests.get(url, headers=self.headers)
+
+    def get_latest_offers(self) -> list[RentalOffer]:
+        response = self.build_response().json()
+
+        items: list[RentalOffer] = []
 
         for item in response["_embedded"]["estates"]:
             # Ignorovat "tip" nabídky, které úplně neodpovídají filtrům a mění se s každým vyhledáváním
