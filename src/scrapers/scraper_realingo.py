@@ -82,7 +82,7 @@ class ScraperRealingo(ScraperBase):
             items.append(RentalOffer(
                 scraper = self,
                 link = urljoin(self.query_url, offer["url"]),
-                description = self.category_to_string(offer["category"]) + ", " + str(offer["area"]["main"]) + " m²",
+                title = self.category_to_string(offer["category"]) + ", " + str(offer["area"]["main"]) + " m²",
                 location = offer["location"]["address"],
                 price = offer["price"]["total"],
                 image_url = urljoin(self.query_url, "/static/images/" + (offer["photos"]["main"] or ""))

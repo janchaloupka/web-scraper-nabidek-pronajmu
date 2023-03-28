@@ -25,7 +25,7 @@ class ScraperRemax(ScraperBase):
             items.append(RentalOffer(
                 scraper = self,
                 link = urljoin(self.query_url, item.get('data-url')),
-                description = item.get("data-title"),
+                title = item.get("data-title"),
                 location = re.sub(r"\s+", " ", item.get("data-display-address")),
                 price = int(re.sub(r"[^\d]", "", item.get("data-price")) or "0"),
                 image_url = item.get("data-img")

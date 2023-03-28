@@ -30,7 +30,7 @@ class ScraperBravis(ScraperBase):
             items.append(RentalOffer(
                 scraper = self,
                 link = urljoin(self.query_url, item.select_one("a.main").get("href")),
-                description = "Pronájem " + params[1].find("strong").get_text().strip() + ", " + params[2].find("strong").get_text().strip(),
+                title = "Pronájem " + params[1].find("strong").get_text().strip() + ", " + params[2].find("strong").get_text().strip(),
                 location = item.select_one(".location").get_text().strip(),
                 price = int(re.sub(r"[^\d]", "", [text for text in item.select_one(".price").stripped_strings][0])),
                 image_url = urljoin(self.query_url, item.select_one(".img > img").get("src"))

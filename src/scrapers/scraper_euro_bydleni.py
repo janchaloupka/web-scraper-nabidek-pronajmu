@@ -60,7 +60,7 @@ class ScraperEuroBydleni(ScraperBase):
             items.append(RentalOffer(
                 scraper = self,
                 link = urljoin(self.query_url, title.find("a").get('href')),
-                description = title.get_text().strip(),
+                title = title.get_text().strip(),
                 location = details[1].get_text().strip(),
                 price = int(re.sub(r"[^\d]", "", details[0].get_text())),
                 image_url = "https:" + image_container.find("img").get("src")

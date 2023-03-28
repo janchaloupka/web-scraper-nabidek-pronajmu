@@ -101,7 +101,7 @@ class ScraperSreality(ScraperBase):
             items.append(RentalOffer(
                 scraper = self,
                 link = self._create_link_to_offer(item),
-                description = item["name"],
+                title = item["name"],
                 location = item["locality"],
                 price = item["price_czk"]["value_raw"],
                 image_url = item["_links"]["image_middle2"][0]["href"]

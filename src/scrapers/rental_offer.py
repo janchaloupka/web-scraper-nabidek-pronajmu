@@ -7,7 +7,7 @@ class RentalOffer:
     link: str
     """URL adresa na nabídku"""
 
-    description: str
+    title: str
     """Popis nabídky (nejčastěji počet pokojů, výměra)"""
 
     location: str
