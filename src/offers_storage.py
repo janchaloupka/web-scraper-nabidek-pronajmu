@@ -1,5 +1,6 @@
 import os
 from typing import List, Set
+
 from scrapers.rental_offer import RentalOffer
 
 

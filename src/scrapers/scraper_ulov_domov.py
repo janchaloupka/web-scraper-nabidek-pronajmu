@@ -1,11 +1,14 @@
 import json
 import logging
 from typing import List
-from disposition import Disposition
-from scrapers.scraper_base import ScraperBase
-from scrapers.rental_offer import RentalOffer
+
 import requests
+
+from disposition import Disposition
+from scrapers.rental_offer import RentalOffer
+from scrapers.scraper_base import ScraperBase
 from utils import flatten
+
 
 class ScraperUlovDomov(ScraperBase):
 

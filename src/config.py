@@ -1,10 +1,12 @@
-import os
-from dotenv import load_dotenv
-from disposition import Disposition
 import functools
 import operator
-import environ
+import os
 from pathlib import Path
+
+import environ
+from dotenv import load_dotenv
+
+from disposition import Disposition
 
 load_dotenv(".env")
 

@@ -1,12 +1,15 @@
 import logging
 import re
 from typing import List
-from disposition import Disposition
-from scrapers.scraper_base import ScraperBase
-from scrapers.rental_offer import RentalOffer
+
 import requests
 from bs4 import BeautifulSoup
+
+from disposition import Disposition
+from scrapers.rental_offer import RentalOffer
+from scrapers.scraper_base import ScraperBase
 from utils import flatten
+
 
 class ScraperRealcity(ScraperBase):
 

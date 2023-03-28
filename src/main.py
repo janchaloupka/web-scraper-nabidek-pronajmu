@@ -1,15 +1,17 @@
 #!/usr/bin/evn python3
 import logging
-import discord
-from typing import List
-from config import *
-from discord.ext import tasks
 from datetime import datetime
 from time import time
+from typing import List
+
+import discord
+from discord.ext import tasks
+
+from config import *
 from discord_logger import DiscordLogger
 from offers_storage import OffersStorage
-from scrapers_manager import create_scrapers, fetch_latest_offers
 from scrapers.rental_offer import RentalOffer
+from scrapers_manager import create_scrapers, fetch_latest_offers
 
 
 def get_current_daytime() -> bool: return datetime.now().hour in range(6, 22)

@@ -1,12 +1,15 @@
 import logging
 import re
-import requests
 from typing import List
-from scrapers.scraper_base import ScraperBase
-from scrapers.rental_offer import RentalOffer
 from urllib.parse import urljoin
+
+import requests
 from bs4 import BeautifulSoup
+
 from disposition import Disposition
+from scrapers.rental_offer import RentalOffer
+from scrapers.scraper_base import ScraperBase
+
 
 class ScraperBravis(ScraperBase):
 

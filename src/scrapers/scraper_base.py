@@ -1,8 +1,11 @@
 from abc import abstractmethod
 from typing import List
-from disposition import Disposition
+
 from requests import Response
+
+from disposition import Disposition
 from scrapers.rental_offer import RentalOffer
+
 
 class ScraperBase():
     """Hlavní třída pro získávání aktuálních nabídek pronájmu bytů z různých služeb
