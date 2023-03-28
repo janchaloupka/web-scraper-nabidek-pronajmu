@@ -8,7 +8,8 @@ import requests
 from disposition import Disposition
 from scrapers.rental_offer import RentalOffer
 from scrapers.scraper_base import ScraperBase
-from utils import flatten
+from scrapers.rental_offer import RentalOffer
+import requests
 
 
 class ScraperRealingo(ScraperBase):
@@ -16,8 +17,8 @@ class ScraperRealingo(ScraperBase):
     name = "realingo"
     logo_url = "https://www.realingo.cz/_next/static/media/images/android-chrome-144x144-cf1233ce.png"
     color = 0x00BC78
+    base_url = "https://www.realingo.cz/graphql"
 
-    request_url = "https://www.realingo.cz/graphql"
     disposition_mapping = {
         Disposition.FLAT_1KK: "FLAT1_KK",
         Disposition.FLAT_1: "FLAT11",
@@ -41,7 +42,7 @@ class ScraperRealingo(ScraperBase):
                 "property": "FLAT",
                 "address": "Brno",
                 "saved": False,
-                "categories": flatten([self.disposition_mapping[d] for d in self.disposition]),
+                "categories": self.get_dispositions_data(),
                 "sort": "NEWEST",
                 "first": 300,
                 "skip": 0
@@ -50,7 +51,7 @@ class ScraperRealingo(ScraperBase):
 
         logging.info("realingo request: %s", json.dumps(json_request))
 
-        return requests.post(self.request_url, headers=self.headers, json=json_request)
+        return requests.post(self.base_url, headers=self.headers, json=json_request)
 
 
     def category_to_string(self, id) -> str:
@@ -101,11 +102,11 @@ class ScraperRealingo(ScraperBase):
         for offer in response["data"]["searchOffer"]["items"]:
             items.append(RentalOffer(
                 scraper = self,
-                link = urljoin(self.query_url, offer["url"]),
+                link = urljoin(self.base_url, offer["url"]),
                 title = self.category_to_string(offer["category"]) + ", " + str(offer["area"]["main"]) + " m²",
                 location = offer["location"]["address"],
                 price = offer["price"]["total"],
-                image_url = urljoin(self.query_url, "/static/images/" + (offer["photos"]["main"] or ""))
+                image_url = urljoin(self.base_url, "/static/images/" + (offer["photos"]["main"] or ""))
             ))
 
         return items

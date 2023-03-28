@@ -16,10 +16,11 @@ class ScraperBravis(ScraperBase):
     name = "BRAVIS"
     logo_url = "https://www.bravis.cz/content/img/logo-small.png"
     color = 0xCE0020
+    base_url = "https://www.bravis.cz/pronajem-bytu"
 
 
     def build_response(self) -> requests.Response:
-        url = "https://www.bravis.cz/pronajem-bytu?"
+        url = self.base_url + "?"
 
         if Disposition.FLAT_1KK in self.disposition or Disposition.FLAT_1 in self.disposition:
             url += "typ-nemovitosti-byt+1=&"
@@ -52,11 +53,11 @@ class ScraperBravis(ScraperBase):
 
             items.append(RentalOffer(
                 scraper = self,
-                link = urljoin(self.query_url, item.select_one("a.main").get("href")),
+                link = urljoin(self.base_url, item.select_one("a.main").get("href")),
                 title = "Pronájem " + params[1].find("strong").get_text().strip() + ", " + params[2].find("strong").get_text().strip(),
                 location = item.select_one(".location").get_text().strip(),
                 price = int(re.sub(r"[^\d]", "", [text for text in item.select_one(".price").stripped_strings][0])),
-                image_url = urljoin(self.query_url, item.select_one(".img > img").get("src"))
+                image_url = urljoin(self.base_url, item.select_one(".img > img").get("src"))
             ))
 
         return items

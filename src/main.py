@@ -9,6 +9,7 @@ from discord.ext import tasks
 
 from config import *
 from discord_logger import DiscordLogger
+from disposition import Disposition
 from offers_storage import OffersStorage
 from scrapers.rental_offer import RentalOffer
 from scrapers_manager import create_scrapers, fetch_latest_offers
@@ -22,7 +23,6 @@ daytime = get_current_daytime()
 interval_time = config.refresh_interval_daytime_minutes if daytime else config.refresh_interval_nighttime_minutes
 
 scrapers = create_scrapers(config.dispositions)
-
 
 @client.event
 async def on_ready():

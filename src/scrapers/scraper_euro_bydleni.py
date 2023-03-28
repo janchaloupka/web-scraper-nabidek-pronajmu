@@ -10,7 +10,9 @@ from bs4 import BeautifulSoup
 from disposition import Disposition
 from scrapers.rental_offer import RentalOffer
 from scrapers.scraper_base import ScraperBase
-from utils import flatten
+from scrapers.rental_offer import RentalOffer
+from urllib.parse import urljoin
+from bs4 import BeautifulSoup
 
 
 class ScraperEuroBydleni(ScraperBase):
@@ -18,8 +20,8 @@ class ScraperEuroBydleni(ScraperBase):
     name = "Eurobydlení"
     logo_url = "https://files.janchaloupka.cz/eurobydleni.png"
     color = 0xFA0F54
+    base_url = "https://www.eurobydleni.cz/search-form"
 
-    request_url = "https://www.eurobydleni.cz/search-form"
     cookies = {"listing-sort": "sort-added"}
     disposition_mapping = {
         Disposition.FLAT_1: 15,
@@ -38,7 +40,7 @@ class ScraperEuroBydleni(ScraperBase):
     def build_response(self) -> requests.Response:
         request_data = {
             "sql[advert_type_eu][]": 7,
-            "sql[advert_subtype_eu][]": flatten([self.disposition_mapping[d] for d in self.disposition]),
+            "sql[advert_subtype_eu][]": self.get_dispositions_data(),
             "sql[advert_function_eu][]": 3,
             "sql[advert_price_min]": "",
             "sql[advert_price_max]": "",
@@ -64,7 +66,7 @@ class ScraperEuroBydleni(ScraperBase):
 
         logging.info("EuroBydlení request: %s", json.dumps(request_data))
 
-        response = requests.post(self.request_url, headers=self.headers, cookies=self.cookies, data=request_data)
+        response = requests.post(self.base_url, headers=self.headers, cookies=self.cookies, data=request_data)
         response.encoding = "utf-8"
         return response
 
@@ -84,7 +86,7 @@ class ScraperEuroBydleni(ScraperBase):
 
             items.append(RentalOffer(
                 scraper = self,
-                link = urljoin(self.query_url, title.find("a").get('href')),
+                link = urljoin(self.base_url, title.find("a").get('href')),
                 title = title.get_text().strip(),
                 location = details[1].get_text().strip(),
                 price = int(re.sub(r"[^\d]", "", details[0].get_text())),

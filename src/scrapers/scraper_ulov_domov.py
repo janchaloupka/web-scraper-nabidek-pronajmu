@@ -7,7 +7,8 @@ import requests
 from disposition import Disposition
 from scrapers.rental_offer import RentalOffer
 from scrapers.scraper_base import ScraperBase
-from utils import flatten
+from scrapers.rental_offer import RentalOffer
+import requests
 
 
 class ScraperUlovDomov(ScraperBase):
@@ -15,8 +16,7 @@ class ScraperUlovDomov(ScraperBase):
     name = "UlovDomov"
     logo_url = "https://www.ulovdomov.cz/favicon.png"
     color = 0xFFFFFF
-
-    request_url = "https://www.ulovdomov.cz/fe-api/find/seperated-offers-within-bounds"
+    base_url = "https://www.ulovdomov.cz/fe-api/find/seperated-offers-within-bounds"
 
     disposition_mapping = {
         Disposition.FLAT_1KK: 2,
@@ -77,7 +77,7 @@ class ScraperUlovDomov(ScraperBase):
                 }
             },
             "conveniences": [],
-            "dispositions": flatten([self.disposition_mapping[d] for d in self.disposition]),
+            "dispositions": self.get_dispositions_data(),
             "furnishing": [],
             "is_price_commision_free": None,
             "limit": 20,
@@ -92,7 +92,7 @@ class ScraperUlovDomov(ScraperBase):
 
         logging.info("UlovDomov request: %s", json.dumps(json_request))
 
-        return requests.post(self.request_url, headers=self.headers, json=json_request)
+        return requests.post(self.base_url, headers=self.headers, json=json_request)
 
     def get_latest_offers(self) -> List[RentalOffer]:
         response = self.build_response().json()

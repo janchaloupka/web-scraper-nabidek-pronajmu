@@ -1,10 +1,11 @@
 from abc import abstractmethod
-from typing import List
+from typing import Any, List
 
 from requests import Response
 
 from disposition import Disposition
 from scrapers.rental_offer import RentalOffer
+from utils import flatten
 
 
 class ScraperBase():
@@ -29,8 +30,16 @@ class ScraperBase():
     def color(self) -> int:
         pass
 
+    @property
+    @abstractmethod
+    def disposition_mapping(self) -> dict[Disposition, Any]:
+        pass
+
     def __init__(self, disposition: Disposition) -> None:
         self.disposition = disposition
+
+    def get_dispositions_data(self) -> list:
+        list(flatten([self.disposition_mapping[d] for d in self.disposition]))
 
     @abstractmethod
     def build_response() -> Response:

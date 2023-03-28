@@ -8,7 +8,9 @@ from bs4 import BeautifulSoup
 from disposition import Disposition
 from scrapers.rental_offer import RentalOffer
 from scrapers.scraper_base import ScraperBase
-from utils import flatten
+from scrapers.rental_offer import RentalOffer
+import requests
+from bs4 import BeautifulSoup
 
 
 class ScraperIdnesReality(ScraperBase):
@@ -37,7 +39,7 @@ class ScraperIdnesReality(ScraperBase):
 
     def build_response(self) -> requests.Response:
         url = "https://reality.idnes.cz/s/pronajem/byty/brno-mesto/?"
-        url += "&".join(flatten([self.disposition_mapping[d] for d in self.disposition]))
+        url += "&".join(self.get_dispositions_data())
 
         logging.info("iDNES reality request: %s", url)
 

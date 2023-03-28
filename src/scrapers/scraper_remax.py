@@ -9,7 +9,9 @@ from bs4 import BeautifulSoup
 from disposition import Disposition
 from scrapers.rental_offer import RentalOffer
 from scrapers.scraper_base import ScraperBase
-from utils import flatten
+from scrapers.rental_offer import RentalOffer
+from urllib.parse import urljoin
+from bs4 import BeautifulSoup
 
 
 class ScraperRemax(ScraperBase):
@@ -17,6 +19,7 @@ class ScraperRemax(ScraperBase):
     name = "Remax"
     logo_url = "https://www.remax-czech.cz/apple-touch-icon.png"
     color = 0x003DA5
+    base_url = "https://www.remax-czech.cz/reality/vyhledavani/"
 
     disposition_mapping = {
         Disposition.FLAT_1KK: "&types%5B4%5D%5B2%5D=on",
@@ -43,8 +46,8 @@ class ScraperRemax(ScraperBase):
 
 
     def build_response(self) -> requests.Response:
-        url = "https://www.remax-czech.cz/reality/vyhledavani/?regions%5B116%5D%5B3702%5D=on&sale=2"
-        url += "".join(flatten([self.disposition_mapping[d] for d in self.disposition]))
+        url = self.base_url + "?regions%5B116%5D%5B3702%5D=on&sale=2"
+        url += "".join(self.get_dispositions_data())
         url += "&order_by_published_date=0"
 
         logging.info("Remax request: %s", url)
@@ -60,7 +63,7 @@ class ScraperRemax(ScraperBase):
         for item in soup.select("#list .container-fluid .pl-items .pl-items__item"):
             items.append(RentalOffer(
                 scraper = self,
-                link = urljoin(self.query_url, item.get('data-url')),
+                link = urljoin(self.base_url, item.get('data-url')),
                 title = item.get("data-title"),
                 location = re.sub(r"\s+", " ", item.get("data-display-address")),
                 price = int(re.sub(r"[^\d]", "", item.get("data-price")) or "0"),
