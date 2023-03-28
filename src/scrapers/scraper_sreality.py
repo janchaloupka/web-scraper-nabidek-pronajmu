@@ -1,17 +1,31 @@
+import logging
 from typing import List
+from disposition import Disposition
 from scrapers.scraper_base import ScraperBase
 from scrapers.rental_offer import RentalOffer
 from time import time
 import requests
 from urllib.parse import urljoin
-
+from utils import flatten
 
 class ScraperSreality(ScraperBase):
 
-    query_url = "https://www.sreality.cz/api/cs/v2/estates?category_main_cb=1&category_sub_cb=6|7|16&category_type_cb=2&locality_district_id=72&locality_region_id=14&per_page=20"
     name = "Sreality"
     logo_url = "https://www.sreality.cz/img/icons/android-chrome-192x192.png"
     color = 0xCC0000
+
+    disposition_mapping = {
+        Disposition.FLAT_1KK: 2,
+        Disposition.FLAT_1: 3,
+        Disposition.FLAT_2KK: 4,
+        Disposition.FLAT_2: 5,
+        Disposition.FLAT_3KK: 6,
+        Disposition.FLAT_3: 7,
+        Disposition.FLAT_4KK: 8,
+        Disposition.FLAT_4: 9,
+        Disposition.FLAT_5_UP: (10, 11, 12),
+        Disposition.FLAT_OTHERS: 16,
+    }
 
     _category_type_to_url = {
         0: "vse",
@@ -86,10 +100,18 @@ class ScraperSreality(ScraperBase):
             "/" + offer["seo"]["locality"] +
             "/" + str(offer["hash_id"]))
 
+    def build_response(self) -> requests.Response:
+        url = "https://www.sreality.cz/api/cs/v2/estates?category_main_cb=1&category_sub_cb="
+        url += "|".join(flatten([self.disposition_mapping[d] for d in self.disposition]))
+        url += "&category_type_cb=2&locality_district_id=72&locality_region_id=14&per_page=20"
+        url += "&tms=" + str(int(time()))
+
+        logging.info("Sreality request: %s", url)
+
+        return requests.get(url, headers=self.headers)
 
     def get_latest_offers(self) -> List[RentalOffer]:
-        request = requests.get(self.query_url + "&tms=" + str(int(time())), headers=self.headers)
-        response = request.json()
+        response = self.build_response().json()
 
         items: List[RentalOffer] = []
 

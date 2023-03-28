@@ -1,3 +1,5 @@
+import json
+import logging
 import re
 import requests
 from typing import List
@@ -7,7 +9,6 @@ from scrapers.rental_offer import RentalOffer
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from utils import flatten
-
 
 class ScraperEuroBydleni(ScraperBase):
 
@@ -57,6 +58,8 @@ class ScraperEuroBydleni(ScraperBase):
             "sql[poptavka][email]": "",
             "sql[poptavka][telefon]": ""
         }
+
+        logging.info("EuroBydlení request: %s", json.dumps(request_data))
 
         response = requests.post(self.request_url, headers=self.headers, cookies=self.cookies, data=request_data)
         response.encoding = "utf-8"

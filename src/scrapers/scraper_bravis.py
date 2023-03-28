@@ -1,3 +1,4 @@
+import logging
 import re
 import requests
 from typing import List
@@ -6,7 +7,6 @@ from scrapers.rental_offer import RentalOffer
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from disposition import Disposition
-
 
 class ScraperBravis(ScraperBase):
 
@@ -30,6 +30,8 @@ class ScraperBravis(ScraperBase):
             url += "typ-nemovitosti-byt+5=&"
 
         url += "typ-nabidky=pronajem-bytu&lokalita=cele-brno&vybavenost=nezalezi&q=&action=search&s=1-20-order-0"
+
+        logging.info("BRAVIS request: %s", url)
 
         return requests.get(url, headers=self.headers)
 

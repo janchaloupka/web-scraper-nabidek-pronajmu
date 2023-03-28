@@ -1,22 +1,45 @@
+import logging
 import re
 from typing import List
+from disposition import Disposition
 from scrapers.scraper_base import ScraperBase
 from scrapers.rental_offer import RentalOffer
 import requests
 from bs4 import BeautifulSoup
-
+from utils import flatten
 
 class ScraperRealcity(ScraperBase):
 
-    query_url = "https://www.realcity.cz/pronajem-bytu/brno-mesto-68/3-kk?sp=%7B%22locality%22%3A%5B68%5D%2C%22withImage%22%3Atrue%2C%22transactionTypes%22%3A%5B%22rent%22%5D%2C%22propertyTypes%22%3A%5B%7B%22propertyType%22%3A%22flat%22%2C%22options%22%3A%7B%22disposition%22%3A%5B%223%2Bkk%22%2C%223%2B1%22%2C%22atyp%22%2C%22disp_nospec%22%5D%7D%7D%5D%7D"
     name = "REALCITY"
     logo_url = "https://files.janchaloupka.cz/realcity.png"
     color = 0xB60D1C
 
+    disposition_mapping = {
+        Disposition.FLAT_1KK: "%221%2Bkk%22",
+        Disposition.FLAT_1: "%221%2B1%22",
+        Disposition.FLAT_2KK: "%222%2Bkk%22",
+        Disposition.FLAT_2: "%222%2B1%22",
+        Disposition.FLAT_3KK: "%223%2Bkk%22",
+        Disposition.FLAT_3: "%223%2B1%22",
+        Disposition.FLAT_4KK: "%224%2Bkk%22",
+        Disposition.FLAT_4: ("%224%2B1%22", "%224%2B2%22"), # 4+1, 4+2
+        Disposition.FLAT_5_UP: ("%225%2Bkk%22", "%225%2B1%22", "%225%2B2%22", "%226%2Bkk%22", "%226%2B1%22", "%22disp_more%22"), # 5kk, 5+1, 5+2, 6kk, 6+1, ++
+        Disposition.FLAT_OTHERS: ("%22atyp%22", "%22disp_nospec%22"), # atyp, unknown
+    }
+
+
+    def build_response(self) -> requests.Response:
+        url = "https://www.realcity.cz/pronajem-bytu/brno-mesto-68/?sp=%7B%22locality%22%3A%5B68%5D%2C%22transactionTypes%22%3A%5B%22rent%22%5D%2C%22propertyTypes%22%3A%5B%7B%22propertyType%22%3A%22flat%22%2C%22options%22%3A%7B%22disposition%22%3A%5B"
+        url += "%2C".join(flatten([self.disposition_mapping[d] for d in self.disposition]))
+        url += "%5D%7D%7D%5D%7D"
+
+        logging.info("REALCITY request: %s", url)
+
+        return requests.get(url, headers=self.headers)
 
     def get_latest_offers(self) -> List[RentalOffer]:
-        request = requests.get(self.query_url, headers=self.headers)
-        soup = BeautifulSoup(request.text, 'html.parser')
+        response = self.build_response()
+        soup = BeautifulSoup(response.text, 'html.parser')
 
         items: List[RentalOffer] = []
 
