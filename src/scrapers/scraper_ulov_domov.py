@@ -79,7 +79,7 @@ class ScraperUlovDomov(ScraperBase):
                 scraper = self,
                 link = offer["absolute_url"],
                 # TODO "Pronájem" podle ID?
-                description = "Pronájem " + self.disposition_id_to_string(offer["disposition_id"]) + " " + str(offer["acreage"]) + " m²",
+                title = "Pronájem " + self.disposition_id_to_string(offer["disposition_id"]) + " " + str(offer["acreage"]) + " m²",
                 location = offer["street"]["label"] + ", " + offer["village"]["label"] + " - " + offer["village_part"]["label"],
                 price = offer["price_rental"],
                 image_url = offer["photos"][0]["path"]

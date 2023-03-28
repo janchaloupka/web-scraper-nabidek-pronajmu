@@ -58,7 +58,7 @@ async def process_latest_offers():
     if not first_time:
         for offer in new_offers:
             embed = discord.Embed(
-                title=offer.description,
+                title=offer.title,
                 url=offer.link,
                 description=offer.location,
                 timestamp=datetime.utcnow(),

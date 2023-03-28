@@ -20,17 +20,17 @@ class ScraperRealcity(ScraperBase):
 
         items: List[RentalOffer] = []
 
-        offers = soup.find(id="rc-advertise-result")
-
-        for item in offers.find_all("div", {"class": "media advertise item"}):
+        for item in soup.select("#rc-advertise-result .media.advertise.item"):
+            image = item.find("div", "pull-left image")
+            body = item.find("div", "media-body")
 
             items.append(RentalOffer(
-                scraper = self,
-                link = "https://www.realcity.cz" + item.find("div", {"class": "title"}).a.get("href"),
-                description = ' '.join(item.find("div", {"class": "title"}).a.get_text().strip().splitlines()),
-                location = item.find("div", {"class": "address"}).get_text().strip(),
-                price = int(re.sub(r"[^\d]", "", item.find("div", {"class": "price"}).span.get_text())),
-                image_url = "https:" + item.find("div", {"class": "pull-left image"}).a.img.get('src')
+                scraper=self,
+                link="https://www.realcity.cz" + body.find("div", "title").a.get("href"),
+                title=body.find("div", "title").a.get_text() or "Chybí titulek",
+                location=body.find("div", "address").get_text().strip() or "Chybí adresa",
+                price=re.sub(r'\D+', '', body.find("div", "price").get_text() or "0"),
+                image_url="https:" + image.img.get("src")
             ))
 
         return items
