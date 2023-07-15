@@ -14,7 +14,7 @@ class RentalOffer:
     location: str
     """Lokace bytu (městská část, ulice)"""
 
-    price: int
+    price: int | str
     """Cena pronájmu za měsíc bez poplatků a energií"""
 
     image_url: str

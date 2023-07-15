@@ -13,6 +13,7 @@ from scrapers.scraper_realingo import ScraperRealingo
 from scrapers.scraper_remax import ScraperRemax
 from scrapers.scraper_sreality import ScraperSreality
 from scrapers.scraper_ulov_domov import ScraperUlovDomov
+from scrapers.scraper_bezrealitky import ScraperBezrealitky
 
 
 def create_scrapers(dispositions: Disposition) -> list[ScraperBase]:
@@ -24,7 +25,8 @@ def create_scrapers(dispositions: Disposition) -> list[ScraperBase]:
         ScraperRealingo(dispositions),
         ScraperRemax(dispositions),
         ScraperSreality(dispositions),
-        ScraperUlovDomov(dispositions)
+        ScraperUlovDomov(dispositions),
+        ScraperBezrealitky(dispositions),
     ]
 
 
