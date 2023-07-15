@@ -18,7 +18,7 @@ class ScraperBezrealitky(ScraperBase):
     logo_url = "https://www.bezrealitky.cz/manifest-icon-192.maskable.png"
     color = 0x00CC00
     base_url = "https://www.bezrealitky.cz"
-    file: ClassVar[str] = "/graphql/bezrealitky.json"
+    file: ClassVar[str] = "./graphql/bezrealitky.json"
 
     API: ClassVar[str] = "https://api.bezrealitky.cz/"
     OFFER_TYPE: ClassVar[str] = "PRONAJEM"

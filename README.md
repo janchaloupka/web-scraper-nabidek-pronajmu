@@ -14,6 +14,7 @@ Nicméně je možné při spuštění aplikace nakonfigurovat, které  **dispozi
 - Remax
 - Sreality
 - UlovDomov
+- BezRealitky
 
 ## Spuštění
 - Lze spustit lokálně nebo v Dockeru
