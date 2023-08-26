@@ -1,6 +1,8 @@
 # Web Scraper Nabídek Pronájmu
 Hlídá nové nabídky na populárních realitních serverech.
 
+[**Docker image (aktuální z master větvě) - `janch32/web-scraper-nabidek-pronajmu`**](https://hub.docker.com/r/janch32/web-scraper-nabidek-pronajmu)
+
 *Tato aplikace byla vytvořena pro osobní použití, takže obsahuje hardkódované údaje pro hledání pronájmu bytů v Brně (ale nemělo by být zas tak moc těžký to upravit).*
 
 Nicméně je možné při spuštění aplikace nakonfigurovat, které  **dispozice bytu** (počet místností) hledat.
@@ -25,6 +27,7 @@ Nicméně je možné při spuštění aplikace nakonfigurovat, které  **dispozi
     - následně je možné spustit `make run` nebo v debug režimu `make debug`
 - **Spuštění v Dockeru**
     - Přiložená Docker Compose konfigurace souží pro vývoj. Stačí ji spustit příkazem `docker-compose up -d` (má zapnutý debug mód)
+    - K dispozici je také sestavený Docker obraz v Ducker Hub, vždy aktuální s master větví - [`janch32/web-scraper-nabidek-pronajmu`](https://hub.docker.com/r/janch32/web-scraper-nabidek-pronajmu)
     - Kromě toho je možné vytvořit "produkční" Docker image díky `Dockerfile`. Při spuštění kontejneru je nutné nastavit všechny požadované env proměnné (ne v v .env.local!)
 
 Aplikace při prvním spuštění nevypíše žádné nabídky, pouze si stáhne seznam těch aktuálních. Poté každých 30 mint (nastavitelné přes env proměnné) kontroluje nové nabídky na realitních serverech a ty přeposílá do Discord kanálu. Aplikace nemusí běžet pořád, po opětovném spuštění pošle všechny nové nabídky od posledního spuštění.
