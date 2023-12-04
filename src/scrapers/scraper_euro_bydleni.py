@@ -88,7 +88,7 @@ class ScraperEuroBydleni(ScraperBase):
                 link = urljoin(self.base_url, title.find("a").get('href')),
                 title = title.get_text().strip(),
                 location = details[1].get_text().strip(),
-                price = int(re.sub(r"[^\d]", "", details[0].get_text())),
+                price = int(re.sub(r"[^\d]", "", details[0].get_text()) or "0"),
                 image_url = "https:" + image_container.find("img").get("src")
             ))
 
