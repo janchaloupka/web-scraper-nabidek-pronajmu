@@ -41,6 +41,12 @@ class Config:
     refresh_interval_nighttime_minutes: int = environ.var(converter=int)
     dispositions: Disposition = environ.var(converter=dispositions_converter)
 
+    bazos_searchstring: str = environ.var()
+    bazos_location: str = environ.var()
+    bazos_radius: str = environ.var()
+    bazos_price_from: str = environ.var()
+    bazos_price_to: str = environ.var()
+
     @environ.config()
     class Discord:
         token = environ.var()
