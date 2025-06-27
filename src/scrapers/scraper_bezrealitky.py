@@ -80,7 +80,7 @@ class ScraperBezrealitky(ScraperBase):
                 title=item["imageAltText"],
                 location=item["address"],
                 price=f"{item['price']} / {item['charges']}",
-                image_url=item["mainImage"]["url"],
+                image_url=item["mainImage"]["url"] if item["mainImage"] else "",
             )
             for item in response["data"]["listAdverts"]["list"]
         ]
