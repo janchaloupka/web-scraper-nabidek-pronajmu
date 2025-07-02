@@ -98,12 +98,18 @@ class ScraperUlovDomov(ScraperBase):
 
         items: list[RentalOffer] = []
         for offer in response["offers"]:
+            location = offer["village"]["label"]
+            if offer["street"] is not None:
+                location = offer["street"]["label"] + ", " + location
+            if offer["village_part"] is not None: # Městská část
+                location += " - " + offer["village_part"]["label"]
+
             items.append(RentalOffer(
                 scraper = self,
                 link = offer["absolute_url"],
                 # TODO "Pronájem" podle ID?
                 title = "Pronájem " + self.disposition_id_to_string(offer["disposition_id"]) + " " + str(offer["acreage"]) + " m²",
-                location = offer["street"]["label"] + ", " + offer["village"]["label"] + " - " + offer["village_part"]["label"],
+                location = location,
                 price = offer["price_rental"],
                 image_url = offer["photos"][0]["path"]
             ))
