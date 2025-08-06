@@ -22,7 +22,7 @@ def create_scrapers(dispositions: Disposition) -> list[ScraperBase]:
         ScraperEuroBydleni(dispositions),
         ScraperIdnesReality(dispositions),
         ScraperRealcity(dispositions),
-        ScraperRealingo(dispositions),
+        #ScraperRealingo(dispositions),
         ScraperRemax(dispositions),
         ScraperSreality(dispositions),
         ScraperUlovDomov(dispositions),
