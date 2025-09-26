@@ -1,11 +1,15 @@
 # Web Scraper Nabídek Pronájmu
-Hlídá nové nabídky na populárních realitních serverech.
+Hlídá nové nabídky na populárních realitních serverech a posílá je do Discord kanálu nebo Telegram chatu.
 
 [**Docker image (aktuální z master větvě) - `janch32/web-scraper-nabidek-pronajmu`**](https://hub.docker.com/r/janch32/web-scraper-nabidek-pronajmu)
 
 *Tato aplikace byla vytvořena pro osobní použití, takže obsahuje hardkódované údaje pro hledání pronájmu bytů v Brně (ale nemělo by být zas tak moc těžký to upravit).*
 
 Nicméně je možné při spuštění aplikace nakonfigurovat, které  **dispozice bytu** (počet místností) hledat.
+
+## Podporované platformy
+- **Discord** - Posílá nabídky jako embedy do Discord kanálu
+- **Telegram** - Posílá nabídky jako zprávy do Telegram chatu
 
 ## Podporované realitní servery
 - BRAVIS
@@ -33,10 +37,19 @@ Nicméně je možné při spuštění aplikace nakonfigurovat, které  **dispozi
 Aplikace při prvním spuštění nevypíše žádné nabídky, pouze si stáhne seznam těch aktuálních. Poté každých 30 mint (nastavitelné přes env proměnné) kontroluje nové nabídky na realitních serverech a ty přeposílá do Discord kanálu. Aplikace nemusí běžet pořád, po opětovném spuštění pošle všechny nové nabídky od posledního spuštění.
 
 ## Konfigurace přes Env proměnné
+
+### Základní konfigurace
+- `BOT_TYPE` - Typ bota k použití. Možné hodnoty: `discord` (výchozí) nebo `telegram`
+- `DISPOSITIONS` - Obsahuje seznam dispozic oddělených čárkou. Např.: `DISPOSITIONS=2+kk,2+1,others`
+
+### Discord konfigurace (pokud BOT_TYPE=discord)
+- `DISCORD_TOKEN` - Discord token bota. [Návod pro získání tokenu](https://discordgsm.com/guide/how-to-get-a-discord-bot-token)
 - `DISCORD_OFFERS_CHANNEL` - Unikátní číslo Discord kanálu, kde se budou posílat nabídky. [Návod pro získání ID](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)
 - `DISCORD_DEV_CHANNEL` - Unikátní číslo Discord kanálu, kde se budou posílat chyby programu.
-- `DISCORD_TOKEN` - Obsahuje Discord token bota. [Návod pro získání tokenu](https://discordgsm.com/guide/how-to-get-a-discord-bot-token)
-- `DISPOSITIONS` - Obsahuje seznam dispozic oddělených čárkou. Např.: `DISPOSITIONS=2+kk,2+1,others`
+
+### Telegram konfigurace (pokud BOT_TYPE=telegram)
+- `TELEGRAM_TOKEN` - Telegram bot token. Získejte od [@BotFather](https://t.me/botfather)
+- `TELEGRAM_CHAT_ID` - Chat ID, kam se budou posílat nabídky. Můžete získat od [@userinfobot](https://t.me/userinfobot)
 
 ### Seznam dostupných hodnot parametru `DISPOSITIONS`
 - `1+kk`

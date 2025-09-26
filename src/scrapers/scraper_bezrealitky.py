@@ -3,6 +3,7 @@ author: Mark Barzali
 """
 
 import json
+import logging
 from abc import ABC as abstract
 from typing import ClassVar
 
@@ -57,6 +58,7 @@ class ScraperBezrealitky(ScraperBase):
             "offerType": self.OFFER_TYPE,
             "disposition": self.get_dispositions_data(),
             "regionOsmIds": [self.BRNO],
+            "locale": "CS",
         }
         self._config["variables"].update(match)
 
@@ -64,23 +66,36 @@ class ScraperBezrealitky(ScraperBase):
     def _create_link_to_offer(item: dict) -> str:
         return f"{ScraperBezrealitky.base_url}/{ScraperBezrealitky.Routes.OFFERS}{item}"
 
-    def build_response(self) -> requests.Response:
+    def build_response(self) -> requests.Response:        
         return requests.post(
             url=f"{ScraperBezrealitky.API}{ScraperBezrealitky.Routes.GRAPHQL}",
-            json=self._config
+            json=self._config,
+            headers=self.headers
         )
 
     def get_latest_offers(self) -> list[RentalOffer]:
         response = self.build_response().json()
+        adverts = response.get("data", {}).get("listAdverts", {}).get("list", [])
 
-        return [  # type: list[RentalOffer]
-            RentalOffer(
-                scraper=self,
-                link=self._create_link_to_offer(item["uri"]),
-                title=item["imageAltText"],
-                location=item["address"],
-                price=f"{item['price']} / {item['charges']}",
-                image_url=item["mainImage"]["url"] if item["mainImage"] else "",
+        offers: list[RentalOffer] = []
+        for item in adverts:
+            location = item.get("address", "")
+            
+            disposition = item.get("disposition", "")
+            surface = item.get("surface", "")
+            title_parts = [disposition, f"{surface} m²" if surface else ""]
+            title = " ".join(filter(None, title_parts)) or "BezRealitky"
+            price = item.get("price", 0)
+            image_url = item.get("mainImage", {}).get("url", "")
+
+            offers.append(
+                RentalOffer(
+                    scraper=self,
+                    link=self._create_link_to_offer(item.get("uri", "")),
+                    title=title,
+                    location=location,
+                    price=price,
+                    image_url=image_url,
+                )
             )
-            for item in response["data"]["listAdverts"]["list"]
-        ]
+        return offers

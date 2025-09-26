@@ -2,49 +2,50 @@
 import logging
 from datetime import datetime
 from time import time
+import asyncio
 
 import discord
 from discord.ext import tasks
 
 from config import *
-from discord_logger import DiscordLogger
+from bot_wrapper import create_bot, DiscordBotWrapper
 from offers_storage import OffersStorage
 from scrapers.rental_offer import RentalOffer
 from scrapers_manager import create_scrapers, fetch_latest_offers
-from datetime import datetime
-import asyncio
 
 def get_current_daytime() -> bool: return datetime.now().hour in range(6, 22)
 
 
-client = discord.Client(intents=discord.Intents.default())
+# Global variables
+bot = create_bot()
+storage = None
 daytime = get_current_daytime()
 interval_time = config.refresh_interval_daytime_minutes if daytime else config.refresh_interval_nighttime_minutes
-
 scrapers = create_scrapers(config.dispositions)
 
-@client.event
-async def on_ready():
-    global channel, storage
-
-    dev_channel = client.get_channel(config.discord.dev_channel)
-    channel = client.get_channel(config.discord.offers_channel)
+async def initialize_bot():
+    global storage
+    
+    await bot.initialize()
     storage = OffersStorage(config.found_offers_file)
-
-    if not config.debug:
-        discord_error_logger = DiscordLogger(client, dev_channel, logging.ERROR)
-        logging.getLogger().addHandler(discord_error_logger)
-    else:
-        logging.info("Discord logger is inactive in debug mode")
+    
+    bot.setup_error_logging()
 
     logging.info("Available scrapers: " + ", ".join([s.name for s in scrapers]))
-
     logging.info("Fetching latest offers every {} minutes".format(interval_time))
 
-    process_latest_offers.start()
+    if isinstance(bot, DiscordBotWrapper):
+        process_latest_offers.start()
+    else:
+        await run_telegram_loop()
 
-@tasks.loop(minutes=interval_time)
-async def process_latest_offers():
+# Discord-specific event handling
+if isinstance(bot, DiscordBotWrapper):
+    @bot.client.event
+    async def on_ready():
+        await initialize_bot()
+
+async def fetch_and_process_offers():
     logging.info("Fetching offers")
 
     new_offers: list[RentalOffer] = []
@@ -58,29 +59,7 @@ async def process_latest_offers():
     logging.info("Offers fetched (new: {})".format(len(new_offers)))
 
     if not first_time:
-        def chunk_offers(offers, size):
-            for i in range(0, len(offers), size):
-                yield offers[i:i + size]
-
-        for offer_batch in chunk_offers(new_offers, config.embed_batch_size):
-            embeds = []
-
-            for offer in offer_batch:
-                embed = discord.Embed(
-                    title=offer.title,
-                    url=offer.link,
-                    description=offer.location,
-                    timestamp=datetime.utcnow(),
-                    color=offer.scraper.color
-                )
-                embed.add_field(name="Cena", value=str(offer.price) + " Kč")
-                embed.set_author(name=offer.scraper.name, icon_url=offer.scraper.logo_url)
-                embed.set_image(url=offer.image_url)
-
-                embeds.append(embed)
-
-            await retry_until_successful_send(channel, embeds)
-            await asyncio.sleep(1.5)
+        await bot.send_offers(new_offers)
     else:
         logging.info("No previous offers, first fetch is running silently")
 
@@ -92,43 +71,34 @@ async def process_latest_offers():
         interval_time = config.refresh_interval_daytime_minutes if daytime else config.refresh_interval_nighttime_minutes
 
         logging.info("Fetching latest offers every {} minutes".format(interval_time))
-        process_latest_offers.change_interval(minutes=interval_time)
+        
+        if isinstance(bot, DiscordBotWrapper):
+            process_latest_offers.change_interval(minutes=interval_time)
 
-    await retry_until_successful_edit(channel, f"Last update <t:{int(time())}:R>")
+    if isinstance(bot, DiscordBotWrapper):
+        await bot.update_status(f"Last update <t:{int(time())}:R>")
 
+@tasks.loop(minutes=interval_time)
+async def process_latest_offers():
+    """Discord-specific wrapper for the core logic"""
+    await fetch_and_process_offers()
 
-async def retry_until_successful_send(channel: discord.TextChannel, embeds: list[discord.Embed], delay: float = 5.0):
-    """Retry sending a message with embeds until it succeeds."""
+async def run_telegram_loop():
+    """Telegram-specific loop for processing offers"""
     while True:
         try:
-            await channel.send(embeds=embeds)
-            logging.info("Embeds successfully sent.")
-            return
-        except discord.errors.DiscordServerError as e:
-            logging.warning(f"Discord server error while sending embeds: {e}. Retrying in {delay:.1f}s.")
-        except discord.errors.HTTPException as e:
-            logging.warning(f"HTTPException while sending embeds: {e}. Retrying in {delay:.1f}s.")
+            await fetch_and_process_offers()
+            await asyncio.sleep(interval_time * 60)  # Convert minutes to seconds
         except Exception as e:
-            logging.exception(f"Unexpected error while sending embeds: {e}. Retrying in {delay:.1f}s.")
-            raise e
-        await asyncio.sleep(delay)
+            logging.exception(f"Error in Telegram loop: {e}")
+            await asyncio.sleep(60)  # Wait 1 minute before retrying
 
 
-async def retry_until_successful_edit(channel: discord.TextChannel, topic: str, delay: float = 5.0):
-    """Retry editing a channel topic until it succeeds."""
-    while True:
-        try:
-            await channel.edit(topic=topic)
-            logging.info(f"Channel topic successfully updated to: {topic}")
-            return
-        except discord.errors.DiscordServerError as e:
-            logging.warning(f"Discord server error while editing topic: {e}. Retrying in {delay:.1f}s.")
-        except discord.errors.HTTPException as e:
-            logging.warning(f"HTTPException while editing topic: {e}. Retrying in {delay:.1f}s.")
-        except Exception as e:
-            logging.exception(f"Unexpected error while editing channel topic: {e}. Retrying in {delay:.1f}s.")
-            raise e
-        await asyncio.sleep(delay)
+
+
+async def main():
+    """Main function for Telegram bot"""
+    await initialize_bot()
 
 if __name__ == "__main__":
     logging.basicConfig(
@@ -137,5 +107,9 @@ if __name__ == "__main__":
         datefmt='%Y-%m-%d %H:%M:%S')
 
     logging.debug("Running in debug mode")
-
-    client.run(config.discord.token, log_level=logging.INFO)
+    
+    if isinstance(bot, DiscordBotWrapper):
+        bot.run()
+    else:
+        # Run Telegram bot
+        asyncio.run(main())

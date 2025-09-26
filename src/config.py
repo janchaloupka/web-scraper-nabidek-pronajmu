@@ -10,12 +10,6 @@ from disposition import Disposition
 
 load_dotenv(".env")
 
-app_env = os.getenv("APP_ENV")
-if app_env:
-    load_dotenv(".env." + app_env, override=True)
-
-load_dotenv(".env.local", override=True)
-
 _str_to_disposition_map = {
     "1+kk": Disposition.FLAT_1KK,
     "1+1": Disposition.FLAT_1,
@@ -32,6 +26,9 @@ _str_to_disposition_map = {
 def dispositions_converter(raw_disps: str):
     return functools.reduce(operator.or_, map(lambda d: _str_to_disposition_map[d], raw_disps.split(",")), Disposition.NONE)
 
+def optional_int_converter(value: str):
+    return int(value) if value and value.strip() else None
+
 
 @environ.config(prefix="")
 class Config:
@@ -41,13 +38,22 @@ class Config:
     refresh_interval_nighttime_minutes: int = environ.var(converter=int)
     dispositions: Disposition = environ.var(converter=dispositions_converter)
     embed_batch_size: int = environ.var(converter=int, default=10)
+    min_price: int | None = environ.var(converter=optional_int_converter, default=None)
+    max_price: int | None = environ.var(converter=optional_int_converter, default=None)
 
     @environ.config()
     class Discord:
-        token = environ.var()
-        offers_channel = environ.var(converter=int)
-        dev_channel = environ.var(converter=int)
+        token = environ.var(default=None)
+        offers_channel = environ.var(converter=optional_int_converter, default=None)
+        dev_channel = environ.var(converter=optional_int_converter, default=None)
 
+    @environ.config()
+    class Telegram:
+        token = environ.var(default=None)
+        chat_id = environ.var(default=None)
+
+    bot_type: str = environ.var(default="discord")
     discord: Discord = environ.group(Discord)
+    telegram: Telegram = environ.group(Telegram)
 
 config: Config = Config.from_environ()

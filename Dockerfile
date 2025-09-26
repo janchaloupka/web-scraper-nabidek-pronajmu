@@ -10,7 +10,7 @@ RUN apk add --no-cache --virtual .build-deps gcc musl-dev && \
 
 ENV APP_ENV=docker
 
-COPY .env* .
+COPY .env .
 COPY src .
 COPY graphql ./graphql
 

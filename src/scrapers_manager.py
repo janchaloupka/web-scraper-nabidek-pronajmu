@@ -1,5 +1,6 @@
 import logging
 import traceback
+import re
 
 from config import *
 from disposition import Disposition
@@ -30,6 +31,45 @@ def create_scrapers(dispositions: Disposition) -> list[ScraperBase]:
     ]
 
 
+def extract_price_from_offer(price: int | str) -> int | None:
+    if isinstance(price, int):
+        return price
+    
+    if isinstance(price, str):
+        price_match = re.search(r'[\d\s,]+', price.replace(' ', ''))
+        if price_match:
+            price_str = price_match.group().replace(',', '').replace(' ', '')
+            try:
+                return int(price_str)
+            except ValueError:
+                pass
+    
+    return None
+
+
+def filter_offers_by_price(offers: list[RentalOffer], min_price: int | None = None, max_price: int | None = None) -> list[RentalOffer]:
+    if min_price is None and max_price is None:
+        return offers
+    
+    filtered_offers = []
+    for offer in offers:
+        price = extract_price_from_offer(offer.price)
+        
+        if price is None:
+            logging.warning(f"Could not extract price from offer: {offer.price} for {offer.title}")
+            continue
+            
+        if min_price is not None and price < min_price:
+            continue
+            
+        if max_price is not None and price > max_price:
+            continue
+            
+        filtered_offers.append(offer)
+    
+    return filtered_offers
+
+
 def fetch_latest_offers(scrapers: list[ScraperBase]) -> list[RentalOffer]:
     """Získá všechny nejnovější nabídky z dostupných serverů
 
@@ -45,4 +85,6 @@ def fetch_latest_offers(scrapers: list[ScraperBase]) -> list[RentalOffer]:
         except Exception:
             logging.error(traceback.format_exc())
 
+    offers = filter_offers_by_price(offers, config.min_price, config.max_price)
+        
     return offers
