@@ -4,7 +4,6 @@ from datetime import datetime
 from time import time
 import asyncio
 
-import discord
 from discord.ext import tasks
 
 from config import *
@@ -52,6 +51,8 @@ async def fetch_and_process_offers():
     for offer in fetch_latest_offers(scrapers):
         if not storage.contains(offer):
             new_offers.append(offer)
+    
+    print(new_offers)
 
     first_time = storage.first_time
     storage.save_offers(new_offers)

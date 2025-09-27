@@ -43,6 +43,17 @@ class ScraperBezrealitky(ScraperBase):
         Disposition.FLAT_OTHERS: None,
     }
 
+    disposition_reverse_mapping = {
+        "DISP_1_KK": "1kk",
+        "DISP_1_1": "1+1",
+        "DISP_2_KK": "2kk",
+        "DISP_2_1": "2+1",
+        "DISP_3_KK": "3kk",
+        "DISP_3_1": "3+1",
+        "DISP_4_KK": "4kk",
+        "DISP_4_1": "4+1",
+    }
+
     def __init__(self, dispositions: Disposition):
         super().__init__(dispositions)
         self._read_config()
@@ -80,8 +91,8 @@ class ScraperBezrealitky(ScraperBase):
         offers: list[RentalOffer] = []
         for item in adverts:
             location = item.get("address", "")
-            
-            disposition = item.get("disposition", "")
+            disposition_key = item.get("disposition", "")
+            disposition = self.disposition_reverse_mapping.get(disposition_key, disposition_key)
             surface = item.get("surface", "")
             title_parts = [disposition, f"{surface} m²" if surface else ""]
             title = " ".join(filter(None, title_parts)) or "BezRealitky"

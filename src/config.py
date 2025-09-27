@@ -1,6 +1,5 @@
 import functools
 import operator
-import os
 from pathlib import Path
 
 import environ
@@ -52,7 +51,7 @@ class Config:
         token = environ.var(default=None)
         chat_id = environ.var(default=None)
 
-    bot_type: str = environ.var(default="discord")
+    bot_type: str = environ.var()
     discord: Discord = environ.group(Discord)
     telegram: Telegram = environ.group(Telegram)
 
