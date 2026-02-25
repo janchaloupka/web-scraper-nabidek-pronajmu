@@ -15,8 +15,8 @@ import requests
 class ScraperBezrealitky(ScraperBase):
 
     name = "BezRealitky"
-    logo_url = "https://www.bezrealitky.cz/manifest-icon-192.maskable.png"
-    color = 0x00CC00
+    logo_url = "https://www.bezrealitky.cz/pwa/icon-192x192-maskable.png"
+    color = 0x00906C
     base_url = "https://www.bezrealitky.cz"
     file: ClassVar[str] = "./graphql/bezrealitky.json"
 
@@ -65,9 +65,14 @@ class ScraperBezrealitky(ScraperBase):
         return f"{ScraperBezrealitky.base_url}/{ScraperBezrealitky.Routes.OFFERS}{item}"
 
     def build_response(self) -> requests.Response:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+        }
+
         return requests.post(
             url=f"{ScraperBezrealitky.API}{ScraperBezrealitky.Routes.GRAPHQL}",
-            json=self._config
+            json=self._config,
+            headers=headers
         )
 
     def get_latest_offers(self) -> list[RentalOffer]:
