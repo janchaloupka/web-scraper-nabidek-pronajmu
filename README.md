@@ -28,11 +28,12 @@ Nicméně je možné při spuštění aplikace nakonfigurovat, které  **dispozi
 - **Spuštění v Dockeru**
     - Přiložená Docker Compose konfigurace souží pro vývoj. Stačí ji spustit příkazem `docker-compose up -d` (má zapnutý debug mód)
     - K dispozici je také sestavený Docker obraz v Ducker Hub, vždy aktuální s master větví - [`janch32/web-scraper-nabidek-pronajmu`](https://hub.docker.com/r/janch32/web-scraper-nabidek-pronajmu)
-    - Kromě toho je možné vytvořit "produkční" Docker image díky `Dockerfile`. Při spuštění kontejneru je nutné nastavit všechny požadované env proměnné (ne v v .env.local!)
+    - Kromě toho je možné vytvořit "produkční" Docker image díky `Dockerfile`. Při spuštění kontejneru je nutné nastavit všechny požadované env proměnné (ne v `.env.local`!)
 
-Aplikace při prvním spuštění nevypíše žádné nabídky, pouze si stáhne seznam těch aktuálních. Poté každých 30 mint (nastavitelné přes env proměnné) kontroluje nové nabídky na realitních serverech a ty přeposílá do Discord kanálu. Aplikace nemusí běžet pořád, po opětovném spuštění pošle všechny nové nabídky od posledního spuštění.
+Aplikace při prvním spuštění nevypíše žádné nabídky, pouze si stáhne seznam těch aktuálních. Poté každých 30 mint ([nastavitelné přes proměnné prostředí](#konfigurace-pres-promenne-prostredi))
+kontroluje nové nabídky na realitních serverech a ty přeposílá do Discord kanálu. Aplikace nemusí běžet pořád, po opětovném spuštění pošle všechny nové nabídky od posledního spuštění.
 
-## Konfigurace přes Env proměnné
+## Konfigurace přes proměnné prostředí
 - `DISCORD_OFFERS_CHANNEL` - Unikátní číslo Discord kanálu, kde se budou posílat nabídky. [Návod pro získání ID](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)
 - `DISCORD_DEV_CHANNEL` - Unikátní číslo Discord kanálu, kde se budou posílat chyby programu.
 - `DISCORD_TOKEN` - Obsahuje Discord token bota. [Návod pro získání tokenu](https://discordgsm.com/guide/how-to-get-a-discord-bot-token)
@@ -50,7 +51,7 @@ Aplikace při prvním spuštění nevypíše žádné nabídky, pouze si stáhne
 - `5++` (5+kk a více místností)
 - `others` (jiné, atypické nebo neznámé velikosti)
 
-### Další konfigurovatelné Env proměnné
+### Další konfigurovatelné proměnné prostředí
 Tyto hodnoty jsou nastavené pro bězné použití a není potřeba ji měnit. Zde je každopádně popis těchto hodnot.
 - `DEBUG` (boolean, výchozí vypnuto). Aktivuje režim ladění aplikace, především podrobnějšího výpisu do konzole. Vhodné pro vývoj.
 - `FOUND_OFFERS_FILE` Cesta k souboru, kam se ukládají dříve nalezené nabídky. Aplikace si soubor vytvoří, ale složka musí existovat. Pokud aplikace nebyla nějakou dobu spuštěna (řádově týdny) je dobré tento soubor smazat - aplikace by toto vyhodnotila jako velké množství nových nabídek a zaspamovala by Discord kanál.
