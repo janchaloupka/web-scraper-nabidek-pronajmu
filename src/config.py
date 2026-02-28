@@ -42,6 +42,12 @@ class Config:
     dispositions: Disposition = environ.var(converter=dispositions_converter)
     embed_batch_size: int = environ.var(converter=int, default=10)
 
+    bazos_searchstring: str = environ.var()
+    bazos_location: str = environ.var()
+    bazos_radius: str = environ.var()
+    bazos_price_from: str = environ.var()
+    bazos_price_to: str = environ.var()
+
     @environ.config()
     class Discord:
         token = environ.var()

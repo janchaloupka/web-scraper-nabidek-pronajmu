@@ -3,3 +3,4 @@ remembered_offers.txt
 found_offers.txt
 data/
 .env.local
+venv/
