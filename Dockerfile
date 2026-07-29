@@ -4,7 +4,8 @@ WORKDIR /app
 VOLUME ["/data"]
 
 COPY requirements.txt requirements.txt
-RUN apk add --no-cache --virtual .build-deps gcc musl-dev && \
+RUN apk add --no-cache jpeg-dev zlib-dev && \
+    apk add --no-cache --virtual .build-deps gcc musl-dev && \
     pip3 install -r requirements.txt && \
     apk del .build-deps
 

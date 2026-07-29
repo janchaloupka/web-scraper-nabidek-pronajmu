@@ -3,3 +3,5 @@ beautifulsoup4
 python-dotenv
 discord.py
 environ-config
+Pillow
+imagehash
