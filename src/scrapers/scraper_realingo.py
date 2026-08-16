@@ -50,7 +50,13 @@ class ScraperRealingo(ScraperBase):
 
         logging.debug("realingo request: %s", json.dumps(json_request))
 
-        return requests.post(self.base_url, headers=self.headers, json=json_request)
+        return requests.post(
+            self.base_url,
+            headers=self.headers,
+            json=json_request,
+            timeout=(10, 60),  # (connect, read) seconds
+            stream=True,
+        )
 
 
     def category_to_string(self, id) -> str:
@@ -93,8 +99,26 @@ class ScraperRealingo(ScraperBase):
         }.get(id, "")
 
 
+    MAX_RESPONSE_BYTES = 32 * 1024 * 1024  # 32 MiB sanity cap for responses
+
+    def _read_response(self) -> dict:
+        """Read a streamed response with a hard size cap, then parse JSON."""
+        response = self.build_response()
+        try:
+            response.raise_for_status()
+            chunks = []
+            total = 0
+            for chunk in response.iter_content(chunk_size=65536):
+                total += len(chunk)
+                if total > self.MAX_RESPONSE_BYTES:
+                    raise RuntimeError(f"realingo response exceeds {self.MAX_RESPONSE_BYTES} bytes")
+                chunks.append(chunk)
+            return json.loads(b"".join(chunks).decode("utf-8", errors="replace"))
+        finally:
+            response.close()
+
     def get_latest_offers(self) -> list[RentalOffer]:
-        response = self.build_response().json()
+        response = self._read_response()
 
         items: list[RentalOffer] = []
 
