@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any
+from typing import Any, Optional
 
 from requests import Response
 
@@ -42,14 +42,16 @@ class ScraperBase():
         return list(flatten([self.disposition_mapping[d] for d in self.disposition]))
 
     @abstractmethod
-    def build_response() -> Response:
+    def build_response() -> Optional[Response]:
         """Vytvoří a pošle dotaz na server pro získání nabídek podle nakonfigurovaných parametrů
 
         Raises:
             NotImplementedError: Pokud potomek neimplementuje tuto metodu
 
         Returns:
-            Response: Odpověď nabídkového serveru obsahující neparsované nabídky
+            Optional[Response]: Odpověď nabídkového serveru obsahující neparsované nabídky,
+            nebo None pokud scraper není nakonfigurován a nemá být použit
+            (v takovém případě má get_latest_offers vrátit prázdný seznam)
         """
         raise NotImplementedError("Server request builder is not implemeneted")
 

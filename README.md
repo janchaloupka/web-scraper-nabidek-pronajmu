@@ -5,7 +5,7 @@ Hlídá nové nabídky na populárních realitních serverech.
 
 *Tato aplikace byla vytvořena pro osobní použití, takže obsahuje hardkódované údaje pro hledání pronájmu bytů v Brně (ale nemělo by být zas tak moc těžký to upravit).*
 
-Nicméně je možné při spuštění aplikace nakonfigurovat, které  **dispozice bytu** (počet místností) hledat.
+Nicméně je možné při spuštění aplikace nakonfigurovat, které  **dispozice bytu** (počet místností) hledat, **které realitní servery** se mají používat a případně parametry vyhledávání na **Bazoši**.
 
 ## Podporované realitní servery
 - BRAVIS
@@ -17,6 +17,7 @@ Nicméně je možné při spuštění aplikace nakonfigurovat, které  **dispozi
 - Sreality
 - UlovDomov
 - BezRealitky
+- Bazoš (vyžaduje nastavení `BAZOS_*` parametrů, viz níže)
 
 ## Spuštění
 - Lze spustit lokálně nebo v Dockeru
@@ -37,6 +38,7 @@ Aplikace při prvním spuštění nevypíše žádné nabídky, pouze si stáhne
 - `DISCORD_DEV_CHANNEL` - Unikátní číslo Discord kanálu, kde se budou posílat chyby programu.
 - `DISCORD_TOKEN` - Obsahuje Discord token bota. [Návod pro získání tokenu](https://discordgsm.com/guide/how-to-get-a-discord-bot-token)
 - `DISPOSITIONS` - Obsahuje seznam dispozic oddělených čárkou. Např.: `DISPOSITIONS=2+kk,2+1,others`
+- `SCRAPERS` - Seznam realitních serverů (scraperů) oddělených čárkou, které se mají používat. Např.: `SCRAPERS=sreality,bezrealitky,bazos`. Výchozí hodnota obsahuje všechny funkční scrapery.
 
 ### Seznam dostupných hodnot parametru `DISPOSITIONS`
 - `1+kk`
@@ -49,6 +51,27 @@ Aplikace při prvním spuštění nevypíše žádné nabídky, pouze si stáhne
 - `4+1`
 - `5++` (5+kk a více místností)
 - `others` (jiné, atypické nebo neznámé velikosti)
+
+### Seznam dostupných hodnot parametru `SCRAPERS`
+- `bravis`
+- `eurobydleni`
+- `idnesreality`
+- `realcity`
+- `realingo` (dočasně nefunkční, není ve výchozím seznamu)
+- `remax`
+- `sreality`
+- `ulovdomov`
+- `bezrealitky`
+- `bazos` (funguje pouze pokud je nastaven alespoň jeden z `BAZOS_*` parametrů níže)
+
+### Konfigurace Bazoše
+Bazoš nemá filtr podle dispozic, hledání se proto řídí následujícími parametry. Pokud není nastaven **žádný** z parametrů `BAZOS_SEARCHSTRING`, `BAZOS_LOCATION`, `BAZOS_RADIUS`, `BAZOS_PRICE_FROM`, `BAZOS_PRICE_TO`, scraper Bazoše se přeskočí (i když je uveden v `SCRAPERS`).
+- `BAZOS_GROUP` - Rubrika Bazoše, ve které se hledá (subdoména, např. `reality` = `reality.bazos.cz`). Výchozí `reality`. Lze použít libovolnou rubriku (`auto`, `dum`, `elektro`, `nabytek`, ...) nebo `www` pro hledání napříč všemi rubrikami.
+- `BAZOS_SEARCHSTRING` - Hledaný výraz. Např.: `BAZOS_SEARCHSTRING=pronájem 2+kk`
+- `BAZOS_LOCATION` - Lokalita (PSČ nebo název místa). Např.: `BAZOS_LOCATION=Brno`
+- `BAZOS_RADIUS` - Okolí lokality v km. Např.: `BAZOS_RADIUS=25`
+- `BAZOS_PRICE_FROM` - Minimální cena v Kč
+- `BAZOS_PRICE_TO` - Maximální cena v Kč
 
 ### Další konfigurovatelné Env proměnné
 Tyto hodnoty jsou nastavené pro bězné použití a není potřeba ji měnit. Zde je každopádně popis těchto hodnot.

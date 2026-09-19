@@ -32,6 +32,18 @@ _str_to_disposition_map = {
 def dispositions_converter(raw_disps: str):
     return functools.reduce(operator.or_, map(lambda d: _str_to_disposition_map[d], raw_disps.split(",")), Disposition.NONE)
 
+# Výchozí seznam scraperů (realingo je dočasně nefunkční, proto není ve výchozím seznamu)
+_default_scrapers = "bravis,eurobydleni,idnesreality,realcity,remax,sreality,ulovdomov,bezrealitky,bazos"
+
+def scrapers_converter(raw_scrapers: str) -> list[str]:
+    """Převede seznam scraperů oddělených čárkou na seznam klíčů (bez mezer, malými písmeny, bez duplicit)"""
+    result = []
+    for name in raw_scrapers.split(","):
+        name = name.strip().lower()
+        if name and name not in result:
+            result.append(name)
+    return result
+
 
 @environ.config(prefix="")
 class Config:
@@ -40,7 +52,15 @@ class Config:
     refresh_interval_daytime_minutes: int = environ.var(converter=int)
     refresh_interval_nighttime_minutes: int = environ.var(converter=int)
     dispositions: Disposition = environ.var(converter=dispositions_converter)
+    scrapers: list[str] = environ.var(converter=scrapers_converter, default=_default_scrapers)
     embed_batch_size: int = environ.var(converter=int, default=10)
+
+    bazos_group: str = environ.var(default="reality")
+    bazos_searchstring: str = environ.var(default="")
+    bazos_location: str = environ.var(default="")
+    bazos_radius: str = environ.var(default="")
+    bazos_price_from: str = environ.var(default="")
+    bazos_price_to: str = environ.var(default="")
 
     @environ.config()
     class Discord:
